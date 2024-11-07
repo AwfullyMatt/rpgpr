@@ -1,7 +1,15 @@
+mod background;
+mod character;
+mod loading;
 mod menu;
+mod player;
 
+use background::BackgroundPlugin;
 use bevy::prelude::*;
+use character::CharacterPlugin;
+use loading::LoadingPlugin;
 use menu::MenuPlugin;
+use player::PlayerPlugin;
 
 pub struct GamePlugin;
 
@@ -26,7 +34,13 @@ impl Plugin for GamePlugin {
                 })
                 .set(ImagePlugin::default_nearest()),
         );
-        app.add_plugins(MenuPlugin);
+        app.add_plugins((
+            MenuPlugin,
+            LoadingPlugin,
+            BackgroundPlugin,
+            PlayerPlugin,
+            CharacterPlugin,
+        ));
         app.insert_resource(Resolutions::default());
         app.insert_resource(Msaa::Off);
         app.insert_resource(ClearColor(Color::linear_rgb(0.1, 0.1, 0.1)));
@@ -56,8 +70,8 @@ impl Resolutions {
 
 #[derive(States, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Default)]
 pub enum AppState {
-    Loading,
     #[default]
+    Loading,
     Menu,
     Playing,
     Settings,
@@ -87,3 +101,8 @@ fn set_initial_resolution(mut query_window: Query<&mut Window>) {
         info!("[MODIFIED] Window Resolution : 1080p");
     }
 }
+
+// GLOBAL CONSTANTS
+
+pub const SPRITE_RATIO: f32 = 8.;
+pub const BG_RATIO: f32 = 5.0;
