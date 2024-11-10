@@ -1,5 +1,6 @@
 mod background;
 mod character;
+mod encounter;
 mod loading;
 mod menu;
 mod player;
@@ -7,6 +8,7 @@ mod player;
 use background::BackgroundPlugin;
 use bevy::prelude::*;
 use character::CharacterPlugin;
+use encounter::EncounterPlugin;
 use loading::LoadingPlugin;
 use menu::MenuPlugin;
 use player::PlayerPlugin;
@@ -40,6 +42,7 @@ impl Plugin for GamePlugin {
             BackgroundPlugin,
             PlayerPlugin,
             CharacterPlugin,
+            EncounterPlugin,
         ));
         app.insert_resource(Resolutions::default());
         app.insert_resource(Msaa::Off);
@@ -104,5 +107,10 @@ fn set_initial_resolution(mut query_window: Query<&mut Window>) {
 
 // GLOBAL CONSTANTS
 
-pub const SPRITE_RATIO: f32 = 8.;
-pub const BG_RATIO: f32 = 5.0;
+pub const CHARACTER_RATIO: f32 = 8.;
+pub const CHARACTER_LAYER: f32 = 2.;
+pub const LOOT_RATIO: f32 = 4.;
+pub const LOOT_LAYER: f32 = 1.;
+pub const BG_RATIO: f32 = 5.;
+pub const BG_LAYER: f32 = 0.;
+pub const PLAYER_X: f32 = -500.;

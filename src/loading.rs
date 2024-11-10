@@ -25,4 +25,7 @@ pub struct SpriteAssets {
 
     #[asset(path = "sprites/tree.png")]
     pub tree: Handle<Image>,
+
+    #[asset(path = "sprites/loot_money.png")]
+    pub loot_money: Handle<Image>,
 }

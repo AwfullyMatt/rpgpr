@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 
-use crate::{loading::SpriteAssets, AppState, BG_RATIO};
+use crate::{
+    encounter::{EncounterKind, SpawnEncounter},
+    loading::SpriteAssets,
+    AppState, BG_LAYER, BG_RATIO,
+};
 
 pub struct BackgroundPlugin;
 
@@ -17,7 +21,7 @@ impl Plugin for BackgroundPlugin {
     }
 }
 
-#[derive(Resource, Default)]
+#[derive(Resource, Default, Deref, DerefMut)]
 pub struct BackgroundCount(pub i32);
 
 #[derive(Component, Default)]
@@ -38,6 +42,7 @@ pub fn spawn_initial_backgrounds(mut evw_spawn_background: EventWriter<SpawnBack
 pub fn evr_spawn_background(
     mut evr_spawn_background: EventReader<SpawnBackground>,
     query_background: Query<(&Background, &Transform)>,
+    mut evw_spawn_encounter: EventWriter<SpawnEncounter>,
     mut bg_count: ResMut<BackgroundCount>,
     sprite_assets: Res<SpriteAssets>,
     mut commands: Commands,
@@ -54,39 +59,20 @@ pub fn evr_spawn_background(
                     5 => 800.,
                     _ => 1120.,
                 };
-                commands.spawn((
-                    SpriteBundle {
-                        texture: sprite_assets.tree.clone(),
-                        transform: Transform {
-                            translation: Vec3::new(x, 0., 1.),
-                            scale: Vec3::splat(BG_RATIO),
-                            ..default()
-                        },
-                        ..default()
-                    },
-                    Background { id: bg_count.0 },
-                ));
-                info!("[SPAWNED] Background ID: {}", bg_count.0);
-                bg_count.0 += 1;
+                spawn_background(&mut commands, &sprite_assets.tree, **bg_count, x);
+                info_spawn_background(**bg_count);
+                **bg_count += 1;
             }
         } else {
             for (bg, tf) in query_background.iter() {
-                if bg.id == bg_count.0 - 1 {
+                if bg.id == **bg_count - 1 {
                     let x: f32 = tf.translation.x + 319.; // 1 pixel overlap
-                    commands.spawn((
-                        SpriteBundle {
-                            texture: sprite_assets.tree.clone(),
-                            transform: Transform {
-                                translation: Vec3::new(x, 0., 1.),
-                                scale: Vec3::splat(BG_RATIO),
-                                ..default()
-                            },
-                            ..default()
-                        },
-                        Background { id: bg_count.0 },
-                    ));
-                    info!("[SPAWNED] Background ID: {}", bg_count.0);
-                    bg_count.0 += 1;
+                    spawn_background(&mut commands, &sprite_assets.tree, **bg_count, x);
+                    info_spawn_background(**bg_count);
+                    **bg_count += 1;
+                    evw_spawn_encounter.send(SpawnEncounter {
+                        kind: EncounterKind::Loot,
+                    });
                 } else {
                     continue;
                 }
@@ -113,4 +99,23 @@ pub fn despawn_background(
             evw_spawn_background.send(SpawnBackground);
         }
     }
+}
+
+fn spawn_background(commands: &mut Commands, texture: &Handle<Image>, bg_count: i32, x: f32) {
+    commands.spawn((
+        SpriteBundle {
+            texture: texture.clone(),
+            transform: Transform {
+                translation: Vec3::new(x, 0., BG_LAYER),
+                scale: Vec3::splat(BG_RATIO),
+                ..default()
+            },
+            ..default()
+        },
+        Background { id: bg_count },
+    ));
+}
+
+fn info_spawn_background(bg_count: i32) {
+    info!("[SPAWNED] Background ID: {}", bg_count);
 }
