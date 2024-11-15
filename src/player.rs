@@ -1,8 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    character::CharacterBundle, loading::SpriteAssets, AppState, CHARACTER_LAYER, CHARACTER_RATIO,
-    PLAYER_X,
+    character::CharacterBundle, loading::SpriteAssets, AppState, SpawnLocations, CHARACTER_SCALE,
 };
 
 pub struct PlayerPlugin;
@@ -10,8 +9,15 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<PlayerLoot>()
-            .add_systems(OnEnter(AppState::Playing), (spawn_player, spawn_loot_info))
-            .add_systems(Update, update_loot_info.run_if(in_state(AppState::Playing)));
+            .add_event::<SpawnPlayer>()
+            .add_systems(
+                OnEnter(AppState::Playing),
+                (evw_spawn_player, spawn_loot_info),
+            )
+            .add_systems(
+                Update,
+                (evr_spawn_player, update_loot_info).run_if(in_state(AppState::Playing)),
+            );
     }
 }
 
@@ -30,19 +36,35 @@ pub struct Player;
 #[derive(Component, Clone, Default)]
 pub struct LootCountText;
 
-pub fn spawn_player(mut commands: Commands, sprite_assets: Res<SpriteAssets>) {
-    commands.spawn((
-        PlayerBundle::default(),
-        SpriteBundle {
-            texture: sprite_assets.old_man.clone(),
-            transform: Transform {
-                translation: Vec3::new(PLAYER_X, 0., CHARACTER_LAYER),
-                scale: Vec3::splat(CHARACTER_RATIO),
+#[derive(Event, Deref)]
+pub struct SpawnPlayer(pub usize);
+
+pub fn evr_spawn_player(
+    mut commands: Commands,
+    mut evr_spawn_player: EventReader<SpawnPlayer>,
+    sprite_assets: Res<SpriteAssets>,
+    spawn_locations: Res<SpawnLocations>,
+) {
+    for ev in evr_spawn_player.read() {
+        commands.spawn((
+            PlayerBundle::default(),
+            SpriteBundle {
+                texture: sprite_assets.old_man.clone(),
+                transform: Transform {
+                    translation: spawn_locations.characters[**ev],
+                    scale: Vec3::splat(CHARACTER_SCALE),
+                    ..default()
+                },
                 ..default()
             },
-            ..default()
-        },
-    ));
+        ));
+        info!("[EVENT] [READ] SpawnPlayer({})", **ev);
+    }
+}
+
+fn evw_spawn_player(mut evw_spawn_player: EventWriter<SpawnPlayer>) {
+    evw_spawn_player.send(SpawnPlayer(0));
+    info!("[EVENT] [WRITE] SpawnPlayer({})", 0);
 }
 
 pub fn spawn_loot_info(mut commands: Commands, asset_server: Res<AssetServer>) {

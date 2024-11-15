@@ -40,42 +40,27 @@ pub struct Character;
 #[derive(Component, Clone, Default)]
 pub struct Constitution {
     pub lvl: Level,
-    pub max: Score,
-    pub cur: Score,
 }
 
 #[derive(Component, Clone, Default)]
 pub struct Strength {
     pub lvl: Level,
-    pub max: Score,
-    pub cur: Score,
 }
 #[derive(Component, Clone, Default)]
 pub struct Dexterity {
     pub lvl: Level,
-    pub max: Score,
-    pub cur: Score,
 }
 #[derive(Component, Clone, Default)]
 pub struct Intelligence {
     pub lvl: Level,
-    pub max: Score,
-    pub cur: Score,
 }
 #[derive(Component, Clone, Default)]
 pub struct Wisdom {
     pub lvl: Level,
-    pub max: Score,
-    pub cur: Score,
 }
 #[derive(Component, Clone, Default)]
 pub struct Luck {
     pub lvl: Level,
-    pub max: Score,
-    pub cur: Score,
 }
 #[derive(Component, Clone, Copy, Default)]
 pub struct Level(pub i32);
-
-#[derive(Component, Clone, Copy, Default)]
-pub struct Score(pub i32);

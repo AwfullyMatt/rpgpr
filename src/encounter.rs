@@ -3,11 +3,8 @@ use std::fmt::Display;
 use bevy::prelude::*;
 
 use crate::{
-    background::{Background, BackgroundCount},
-    character::Character,
-    loading::SpriteAssets,
-    player::PlayerLoot,
-    AppState, CHARACTER_LAYER, CHARACTER_RATIO, LOOT_LAYER, LOOT_RATIO, PLAYER_X,
+    character::Character, loading::SpriteAssets, player::PlayerLoot, AppState, SpawnLocations,
+    CHARACTER_LAYER, CHARACTER_SCALE, ENCOUNTER_LAYER, ENCOUNTER_SCALE,
 };
 
 pub struct EncounterPlugin;
@@ -33,6 +30,7 @@ pub struct Loot {
 #[derive(Event)]
 pub struct SpawnEncounter {
     pub kind: EncounterKind,
+    pub lane: usize,
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -63,30 +61,23 @@ impl Display for EncounterKind {
 
 pub fn evr_spawn_encounter(
     mut commands: Commands,
-    bg_count: Res<BackgroundCount>,
+    spawn_locations: Res<SpawnLocations>,
     sprite_assets: Res<SpriteAssets>,
-    query_background: Query<(&Background, &Transform)>,
     mut evr_spawn_encounter: EventReader<SpawnEncounter>,
 ) {
     for ev in evr_spawn_encounter.read() {
-        let mut x = 0.;
-        for (bg, tf) in query_background.iter() {
-            if bg.id == **bg_count - 1 {
-                x = tf.translation.x;
-            } else {
-                x = 1100.
-            } // ToDo - there is a race condition here
-              // this is a temp fix
-              // spawning will need to happen AFTER bg count is updated, ALWAYS
-              // use scheduling to do so
-        }
+        let x = spawn_locations.encounters[ev.lane].x;
         let (texture, scale, z) = match ev.kind {
             EncounterKind::Combat => (
                 sprite_assets.old_man.clone(),
-                CHARACTER_RATIO,
+                CHARACTER_SCALE,
                 CHARACTER_LAYER,
             ),
-            EncounterKind::Loot => (sprite_assets.loot_money.clone(), LOOT_RATIO, LOOT_LAYER),
+            EncounterKind::Loot => (
+                sprite_assets.loot_money.clone(),
+                ENCOUNTER_SCALE,
+                ENCOUNTER_LAYER,
+            ),
         };
         let entity = commands
             .spawn((
@@ -123,9 +114,10 @@ pub fn collect_loot(
     mut commands: Commands,
     query_encounter: Query<(Entity, &Loot, &Transform)>,
     mut player_loot: ResMut<PlayerLoot>,
+    spawn_locations: Res<SpawnLocations>,
 ) {
     for (entity, loot, tf) in query_encounter.iter() {
-        if tf.translation.x <= PLAYER_X {
+        if tf.translation.x <= spawn_locations.characters[0].x {
             commands.entity(entity).despawn_recursive();
             info!("[DESPAWNED] Encounter: {}", loot.kind);
             **player_loot += 1;

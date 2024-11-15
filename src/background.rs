@@ -1,17 +1,12 @@
 use bevy::prelude::*;
 
-use crate::{
-    encounter::{EncounterKind, SpawnEncounter},
-    loading::SpriteAssets,
-    AppState, BG_LAYER, BG_RATIO,
-};
+use crate::{loading::SpriteAssets, AppState, SpawnLocations, BACKGROUND_SCALE};
 
 pub struct BackgroundPlugin;
 
 impl Plugin for BackgroundPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<BackgroundCount>()
-            .add_event::<SpawnBackground>()
+        app.add_event::<SpawnBackground>()
             .add_systems(OnEnter(AppState::Playing), spawn_initial_backgrounds)
             .add_systems(
                 Update,
@@ -21,63 +16,47 @@ impl Plugin for BackgroundPlugin {
     }
 }
 
-#[derive(Resource, Default, Deref, DerefMut)]
-pub struct BackgroundCount(pub i32);
-
 #[derive(Component, Default)]
-pub struct Background {
-    pub id: i32,
-}
+pub struct Background;
 
-#[derive(Event)]
-pub struct SpawnBackground;
+#[derive(Event, Deref)]
+pub struct SpawnBackground(pub usize);
 
 pub fn spawn_initial_backgrounds(mut evw_spawn_background: EventWriter<SpawnBackground>) {
-    for _i in 0..7 {
-        evw_spawn_background.send(SpawnBackground);
-        info!("[WRITE] Spawn Background.");
-    }
+    //the number of bgs/screen should be determined by screen size
+    let events = vec![
+        SpawnBackground(0),
+        SpawnBackground(1),
+        SpawnBackground(2),
+        SpawnBackground(3),
+        SpawnBackground(4),
+        SpawnBackground(5),
+        SpawnBackground(6),
+        SpawnBackground(7),
+    ];
+    evw_spawn_background.send_batch(events);
 }
 
 pub fn evr_spawn_background(
     mut evr_spawn_background: EventReader<SpawnBackground>,
-    query_background: Query<(&Background, &Transform)>,
-    mut evw_spawn_encounter: EventWriter<SpawnEncounter>,
-    mut bg_count: ResMut<BackgroundCount>,
+    spawn_locations: Res<SpawnLocations>,
     sprite_assets: Res<SpriteAssets>,
     mut commands: Commands,
 ) {
-    for _ev in evr_spawn_background.read() {
-        if bg_count.0 < 7 {
-            for _i in 0..7 {
-                let x: f32 = match bg_count.0 {
-                    0 => -800.,
-                    1 => -480.,
-                    2 => -160.,
-                    3 => 160.,
-                    4 => 480.,
-                    5 => 800.,
-                    _ => 1120.,
-                };
-                spawn_background(&mut commands, &sprite_assets.tree, **bg_count, x);
-                info_spawn_background(**bg_count);
-                **bg_count += 1;
-            }
-        } else {
-            for (bg, tf) in query_background.iter() {
-                if bg.id == **bg_count - 1 {
-                    let x: f32 = tf.translation.x + 319.; // 1 pixel overlap
-                    spawn_background(&mut commands, &sprite_assets.tree, **bg_count, x);
-                    info_spawn_background(**bg_count);
-                    **bg_count += 1;
-                    evw_spawn_encounter.send(SpawnEncounter {
-                        kind: EncounterKind::Loot,
-                    });
-                } else {
-                    continue;
-                }
-            }
-        }
+    for ev in evr_spawn_background.read() {
+        commands.spawn((
+            SpriteBundle {
+                texture: sprite_assets.tree.clone(),
+                transform: Transform {
+                    translation: spawn_locations.backgrounds[**ev],
+                    scale: Vec3::splat(BACKGROUND_SCALE),
+                    ..default()
+                },
+                ..default()
+            },
+            Background,
+        ));
+        info!("[EVENT] [READ] SpawnBackground({})", **ev);
     }
 }
 
@@ -89,33 +68,15 @@ pub fn move_backgrounds(mut query_background: Query<(&Background, &mut Transform
 
 pub fn despawn_background(
     mut commands: Commands,
+    spawn_locations: Res<SpawnLocations>,
     mut evw_spawn_background: EventWriter<SpawnBackground>,
-    query_background: Query<(Entity, &Background, &Transform)>,
+    query_background: Query<(Entity, &Transform)>,
 ) {
-    for (entity, background, transform) in query_background.iter() {
-        if transform.translation.x < -1120. {
+    for (entity, transform) in query_background.iter() {
+        if transform.translation.x < spawn_locations.despawns[0] {
             commands.entity(entity).despawn_recursive();
-            info!("[DESPAWN] Background ID: {}", background.id);
-            evw_spawn_background.send(SpawnBackground);
+            info!("[DESPAWNED] [ENTITY] Background");
+            evw_spawn_background.send(SpawnBackground(8));
         }
     }
-}
-
-fn spawn_background(commands: &mut Commands, texture: &Handle<Image>, bg_count: i32, x: f32) {
-    commands.spawn((
-        SpriteBundle {
-            texture: texture.clone(),
-            transform: Transform {
-                translation: Vec3::new(x, 0., BG_LAYER),
-                scale: Vec3::splat(BG_RATIO),
-                ..default()
-            },
-            ..default()
-        },
-        Background { id: bg_count },
-    ));
-}
-
-fn info_spawn_background(bg_count: i32) {
-    info!("[SPAWNED] Background ID: {}", bg_count);
 }
