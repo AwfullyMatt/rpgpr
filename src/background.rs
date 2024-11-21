@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 
-use crate::{loading::SpriteAssets, AppState, SpawnLocations, BACKGROUND_SCALE};
+use crate::{
+    area::{AreaKind, CurrentArea},
+    loading::SpriteAssets,
+    AppState, SpawnLocations, BACKGROUND_SCALE,
+};
 
 pub struct BackgroundPlugin;
 
@@ -17,13 +21,20 @@ impl Plugin for BackgroundPlugin {
 }
 
 #[derive(Component, Default)]
-pub struct Background;
+pub struct Background {
+    kind: AreaKind,
+}
+impl Background {
+    pub fn new(kind: AreaKind) -> Self {
+        Self { kind }
+    }
+}
 
 #[derive(Event, Deref)]
 pub struct SpawnBackground(pub usize);
 
 pub fn spawn_initial_backgrounds(mut evw_spawn_background: EventWriter<SpawnBackground>) {
-    //the number of bgs/screen should be determined by screen size
+    // TODO: the number of bgs/screen should be determined by screen size
     let events = vec![
         SpawnBackground(0),
         SpawnBackground(1),
@@ -41,6 +52,7 @@ pub fn evr_spawn_background(
     mut evr_spawn_background: EventReader<SpawnBackground>,
     spawn_locations: Res<SpawnLocations>,
     sprite_assets: Res<SpriteAssets>,
+    current_area: Res<CurrentArea>,
     mut commands: Commands,
 ) {
     for ev in evr_spawn_background.read() {
@@ -54,7 +66,12 @@ pub fn evr_spawn_background(
                 },
                 ..default()
             },
-            Background,
+            Background::new(match current_area.0.kind {
+                AreaKind::Forest => AreaKind::Forest,
+                AreaKind::Swamp => AreaKind::Swamp,
+                AreaKind::Desert => AreaKind::Desert,
+                _ => AreaKind::Default,
+            }),
         ));
         info!("[EVENT] [READ] SpawnBackground({})", **ev);
     }

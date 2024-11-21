@@ -1,0 +1,15 @@
+Areas([		
+	(
+		name: "Forest 1",
+		kind: Forest,
+		chance_loot: (50.),
+		chance_enemy: (50.),
+	),
+	(
+		name: "Desert 1",
+		kind: Desert,
+		chance_loot: (25.),
+		chance_enemy: (75.),
+	)
+])
+

@@ -1,3 +1,4 @@
+mod area;
 mod background;
 mod character;
 mod encounter;
@@ -5,6 +6,7 @@ mod loading;
 mod menu;
 mod player;
 
+use area::AreaPlugin;
 use background::BackgroundPlugin;
 use bevy::{
     prelude::*,
@@ -47,6 +49,7 @@ impl Plugin for GamePlugin {
             BackgroundPlugin,
             PlayerPlugin,
             CharacterPlugin,
+            AreaPlugin,
             EncounterPlugin,
         ));
         app.insert_resource(Resolutions::default());
