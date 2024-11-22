@@ -69,7 +69,7 @@ pub fn evr_spawn_encounter(
         let x = spawn_locations.encounters[ev.lane].x;
         let (texture, scale, z) = match ev.kind {
             EncounterKind::Combat => (
-                sprite_assets.old_man.clone(),
+                sprite_assets.character_old_man.clone(),
                 CHARACTER_SCALE,
                 CHARACTER_LAYER,
             ),

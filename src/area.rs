@@ -4,6 +4,8 @@ use bevy::prelude::*;
 use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
 
+use crate::Chance;
+
 pub struct AreaPlugin;
 impl Plugin for AreaPlugin {
     fn name(&self) -> &str {
@@ -13,6 +15,7 @@ impl Plugin for AreaPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Areas>()
             .init_resource::<CurrentArea>()
+            .init_resource::<CurrentAreaSet>()
             .add_systems(Startup, setup);
     }
 }
@@ -21,10 +24,13 @@ fn setup(mut areas: ResMut<Areas>) {
     *areas = Areas::init();
 }
 
-#[derive(Resource, Deref, DerefMut, Default)]
+#[derive(Resource, Default)]
 pub struct CurrentArea(pub Area);
 
-#[derive(Resource, Default, Deref, DerefMut, Serialize, Deserialize)]
+#[derive(Resource, Default)]
+pub struct CurrentAreaSet(pub Vec<Area>);
+
+#[derive(Resource, Default, Serialize, Deserialize)]
 pub struct Areas(pub Vec<Area>);
 impl Areas {
     fn init() -> Self {
@@ -55,16 +61,15 @@ impl Display for Areas {
     }
 }
 
-#[derive(Component, Serialize, Deserialize, Default, Deref, DerefMut)]
+#[derive(Component, Clone, Serialize, Deserialize, Default)]
 pub struct Area {
     pub name: String,
-    #[deref]
     pub kind: AreaKind,
     pub chance_loot: Chance,
     pub chance_enemy: Chance,
 }
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Default, Clone, Copy, Serialize, Deserialize, PartialEq)]
 pub enum AreaKind {
     #[default]
     Default,
@@ -73,5 +78,22 @@ pub enum AreaKind {
     Swamp,
 }
 
-#[derive(Component, Clone, Copy, Default, Deref, DerefMut, Serialize, Deserialize)]
-pub struct Chance(pub f32);
+#[derive(Event)]
+pub struct SetArea(pub AreaKind);
+
+pub fn ev_set_area(
+    mut evr_set_area: EventReader<SetArea>,
+    mut current_area: ResMut<CurrentArea>,
+    areas: Res<Areas>,
+) {
+    for ev in evr_set_area.read() {
+        current_area.0 = match ev.0 {
+            AreaKind::Default => Area::default(),
+            AreaKind::Forest => match areas.0.iter().find(|a| a.kind == ev.0) {
+                Some(area) => area.clone(),
+                None => Area::default(),
+            },
+            _ => Area::default(),
+        };
+    }
+}

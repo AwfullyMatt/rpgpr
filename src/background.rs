@@ -1,9 +1,10 @@
 use bevy::prelude::*;
+use rand::prelude::*;
 
 use crate::{
-    area::{AreaKind, CurrentArea},
+    area::{AreaKind, Areas, CurrentArea},
     loading::SpriteAssets,
-    AppState, SpawnLocations, BACKGROUND_SCALE,
+    AppState, SpawnLocations, Weighting, BACKGROUND_SCALE,
 };
 
 pub struct BackgroundPlugin;
@@ -21,14 +22,7 @@ impl Plugin for BackgroundPlugin {
 }
 
 #[derive(Component, Default)]
-pub struct Background {
-    kind: AreaKind,
-}
-impl Background {
-    pub fn new(kind: AreaKind) -> Self {
-        Self { kind }
-    }
-}
+pub struct Background;
 
 #[derive(Event, Deref)]
 pub struct SpawnBackground(pub usize);
@@ -54,11 +48,20 @@ pub fn evr_spawn_background(
     sprite_assets: Res<SpriteAssets>,
     current_area: Res<CurrentArea>,
     mut commands: Commands,
+    areas: Res<Areas>,
 ) {
     for ev in evr_spawn_background.read() {
+        use AreaKind::*;
+
+        //let weighting = Weighting::new(None);
+
+        //for area in areas.0.iter().find(|a| a.kind == current_area.0.kind) {}
         commands.spawn((
             SpriteBundle {
-                texture: sprite_assets.tree.clone(),
+                texture: match current_area.0.kind {
+                    Forest => sprite_assets.forest_0.clone(),
+                    _ => sprite_assets.forest_1.clone(),
+                },
                 transform: Transform {
                     translation: spawn_locations.backgrounds[**ev],
                     scale: Vec3::splat(BACKGROUND_SCALE),
@@ -66,12 +69,7 @@ pub fn evr_spawn_background(
                 },
                 ..default()
             },
-            Background::new(match current_area.0.kind {
-                AreaKind::Forest => AreaKind::Forest,
-                AreaKind::Swamp => AreaKind::Swamp,
-                AreaKind::Desert => AreaKind::Desert,
-                _ => AreaKind::Default,
-            }),
+            Background,
         ));
         info!("[EVENT] [READ] SpawnBackground({})", **ev);
     }

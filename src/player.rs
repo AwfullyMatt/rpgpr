@@ -49,7 +49,7 @@ pub fn evr_spawn_player(
         commands.spawn((
             PlayerBundle::default(),
             SpriteBundle {
-                texture: sprite_assets.old_man.clone(),
+                texture: sprite_assets.character_old_man.clone(),
                 transform: Transform {
                     translation: spawn_locations.characters[**ev],
                     scale: Vec3::splat(CHARACTER_SCALE),

@@ -17,6 +17,7 @@ use encounter::EncounterPlugin;
 use loading::LoadingPlugin;
 use menu::MenuPlugin;
 use player::PlayerPlugin;
+use serde::{Deserialize, Serialize};
 
 pub struct GamePlugin;
 
@@ -63,6 +64,15 @@ impl Plugin for GamePlugin {
     }
 }
 
+// GLOBAL CONSTANTS
+
+pub const CHARACTER_SCALE: f32 = 8.;
+pub const CHARACTER_LAYER: f32 = 2.;
+pub const ENCOUNTER_SCALE: f32 = 4.;
+pub const ENCOUNTER_LAYER: f32 = 1.;
+pub const BACKGROUND_SCALE: f32 = 5.;
+pub const BACKGROUND_LAYER: f32 = 0.;
+
 // GLOBAL RESOURCES
 
 #[derive(Resource)]
@@ -104,6 +114,18 @@ pub enum GameState {
     #[default]
     Home,
     Combat,
+}
+
+#[derive(Component, Clone, Copy, Default, Deref, DerefMut, Serialize, Deserialize)]
+pub struct Chance(pub f32);
+
+#[derive(Component, Default, Deref, DerefMut, Eq, PartialEq, PartialOrd, Ord)]
+pub struct Weighting<T: Eq + PartialEq + Ord + PartialOrd>(pub Vec<T>);
+
+// TODO: would like this all to be generics
+
+pub trait Weighable<T> {
+    fn weigh(&mut self) {}
 }
 
 // SETUP
@@ -176,12 +198,3 @@ fn initialize_spawn_locations(
         info!("[INITIALIZED] [RESOURCE] Spawn Locations");
     }
 }
-
-// GLOBAL CONSTANTS
-
-pub const CHARACTER_SCALE: f32 = 8.;
-pub const CHARACTER_LAYER: f32 = 2.;
-pub const ENCOUNTER_SCALE: f32 = 4.;
-pub const ENCOUNTER_LAYER: f32 = 1.;
-pub const BACKGROUND_SCALE: f32 = 5.;
-pub const BACKGROUND_LAYER: f32 = 0.;
