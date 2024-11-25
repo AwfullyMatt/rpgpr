@@ -1,15 +1,64 @@
-Areas([		
-	(
-		name: "Forest 1",
-		kind: Forest,
-		chance_loot: (50.),
-		chance_enemy: (50.),
-	),
-	(
-		name: "Desert 1",
-		kind: Desert,
-		chance_loot: (25.),
-		chance_enemy: (75.),
-	)
-])
-
+Areas(
+	[
+		Area(
+			name: "Forest 1",
+			kind: Forest,
+			weighting_loot: (
+				chances: [
+					(
+						value: .50,
+						result: FAILURE,
+					),
+					(
+						value: .50,
+						result: SUCCESS,
+					)
+				],
+				kind: LOOT,
+			),
+			weighting_enemy: (
+				chances: [
+					(
+						value: .50,
+						result: FAILURE,
+					),
+					(
+						value: .50,
+						result: SUCCESS,
+					)
+				],
+				kind: ENEMY,
+			)
+		),
+		Area(
+			name: "Desert 1",
+			kind: Forest,
+			weighting_loot: (
+				chances: [
+					(
+						value: .75,
+						result: FAILURE,
+					),
+					(
+						value: .25,
+						result: SUCCESS,
+					)
+				],
+				kind: LOOT,
+			),
+			weighting_enemy: (
+				chances: [
+					(
+						value: .25,
+						result: FAILURE,
+					),
+					(
+						value: .75,
+						result: SUCCESS,
+					)
+				],
+				kind: ENEMY,
+			)
+		)
+	]
+)

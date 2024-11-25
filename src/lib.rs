@@ -6,10 +6,14 @@ mod loading;
 mod menu;
 mod player;
 
+use std::cmp::Ordering;
+
 use area::AreaPlugin;
 use background::BackgroundPlugin;
 use bevy::{
     prelude::*,
+    reflect::List,
+    utils::HashMap,
     window::{WindowResized, WindowTheme},
 };
 use character::CharacterPlugin;
@@ -17,6 +21,7 @@ use encounter::EncounterPlugin;
 use loading::LoadingPlugin;
 use menu::MenuPlugin;
 use player::PlayerPlugin;
+use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
 pub struct GamePlugin;
@@ -116,17 +121,76 @@ pub enum GameState {
     Combat,
 }
 
-#[derive(Component, Clone, Copy, Default, Deref, DerefMut, Serialize, Deserialize)]
-pub struct Chance(pub f32);
+#[derive(Clone, Copy, Default, Deserialize, Serialize)]
+pub struct Chance {
+    pub value: f32,
+    pub result: ChanceResult,
+}
 
-#[derive(Component, Default, Deref, DerefMut, Eq, PartialEq, PartialOrd, Ord)]
-pub struct Weighting<T: Eq + PartialEq + Ord + PartialOrd>(pub Vec<T>);
+#[derive(Clone, Copy, Default, Deserialize, Serialize)]
+pub enum ChanceResult {
+    SUCCESS,
+    #[default]
+    FAILURE,
+}
+
+#[derive(Clone, Default, Deserialize, Serialize)]
+pub enum WeightingKind {
+    #[default]
+    DEFAULT,
+    LOOT,
+    ENEMY,
+}
+
+#[derive(Clone, Default, Deserialize, Serialize)]
+pub struct Weighting {
+    pub chances: Vec<Chance>,
+    pub kind: WeightingKind,
+}
+impl Weighting {
+    pub fn new(weight_success: f32, weight_failure: f32, kind: WeightingKind) -> Self {
+        let mut chances: Vec<Chance> = vec![];
+        chances.push(Chance {
+            value: weight_failure,
+            result: ChanceResult::FAILURE,
+        });
+        chances.push(Chance {
+            value: weight_success,
+            result: ChanceResult::SUCCESS,
+        });
+
+        Self { chances, kind }
+    }
+
+    pub fn weight(&self) -> f32 {
+        let mut weight: f32 = 0.0;
+        for chance in self.chances.iter() {
+            weight += chance.value;
+        }
+        weight
+    }
+
+    pub fn result(&self) -> Chance {
+        let mut rng: ThreadRng = thread_rng();
+        let f: f32 = rng.gen_range(0.0..=self.weight());
+
+        let mut value: f32 = 0.0;
+        let mut min_diff: f32 = (value - f).abs();
+        let mut result: ChanceResult = ChanceResult::default();
+
+        for chance in self.chances.iter() {
+            let diff = (chance.value - f).abs();
+            if diff < min_diff {
+                min_diff = diff;
+                value = chance.value;
+                result = chance.result;
+            }
+        }
+        Chance { value, result }
+    }
+}
 
 // TODO: would like this all to be generics
-
-pub trait Weighable<T> {
-    fn weigh(&mut self) {}
-}
 
 // SETUP
 

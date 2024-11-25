@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
 
-use crate::Chance;
+use crate::{Chance, Weighting};
 
 pub struct AreaPlugin;
 impl Plugin for AreaPlugin {
@@ -65,8 +65,8 @@ impl Display for Areas {
 pub struct Area {
     pub name: String,
     pub kind: AreaKind,
-    pub chance_loot: Chance,
-    pub chance_enemy: Chance,
+    pub weighting_loot: Weighting,
+    pub weighting_enemy: Weighting,
 }
 
 #[derive(Default, Clone, Copy, Serialize, Deserialize, PartialEq)]

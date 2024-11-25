@@ -21,18 +21,18 @@ pub struct AudioAssets {}
 #[derive(AssetCollection, Resource)]
 pub struct SpriteAssets {
     // [BACKGROUNDS]
-    #[asset(path = "sprites\\backgrounds\\background_forest_0.png")]
+    #[asset(path = "sprites/backgrounds/background_forest_0.png")]
     pub forest_0: Handle<Image>,
 
-    #[asset(path = "sprites\\backgrounds\\background_forest_1.png")]
+    #[asset(path = "sprites/backgrounds/background_forest_1.png")]
     pub forest_1: Handle<Image>,
 
-    #[asset(path = "sprites\\backgrounds\\background_forest_2.png")]
+    #[asset(path = "sprites/backgrounds/background_forest_2.png")]
     pub forest_2: Handle<Image>,
 
-    #[asset(path = "sprites\\characters\\character_old_man.png")]
+    #[asset(path = "sprites/characters/character_old_man.png")]
     pub character_old_man: Handle<Image>,
 
-    #[asset(path = "sprites\\items\\item_money.png")]
+    #[asset(path = "sprites/items/item_money.png")]
     pub loot_money: Handle<Image>,
 }
