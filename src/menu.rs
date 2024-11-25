@@ -142,7 +142,6 @@ fn menu_button_press(
         (Changed<Interaction>, With<Button>),
     >,
     mut next_state: ResMut<NextState<AppState>>,
-    mut ev_app_exit: EventWriter<AppExit>,
 ) {
     for (interaction, mmb) in &mut query_button_interaction {
         match interaction {
@@ -156,8 +155,8 @@ fn menu_button_press(
                     info!("[MODIFIED] Appstate >> Settings");
                 }
                 MainMenuButton::Exit => {
-                    ev_app_exit.send(AppExit::Success);
-                    info!("[EXIT] Gracefully Exiting App");
+                    next_state.set(AppState::Exit);
+                    info!("[MODIFIED] Appstate >> Exit");
                 }
             },
             _ => {}

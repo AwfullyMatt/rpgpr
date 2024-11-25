@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
 
-use crate::{Chance, Weighting};
+use crate::{AppState, Weighting};
 
 pub struct AreaPlugin;
 impl Plugin for AreaPlugin {
@@ -16,7 +16,8 @@ impl Plugin for AreaPlugin {
         app.init_resource::<Areas>()
             .init_resource::<CurrentArea>()
             .init_resource::<CurrentAreaSet>()
-            .add_systems(Startup, setup);
+            .add_systems(Startup, setup)
+            .add_systems(Update, evr_set_area.run_if(in_state(AppState::Playing)));
     }
 }
 
@@ -26,6 +27,7 @@ fn setup(mut areas: ResMut<Areas>) {
 
 #[derive(Resource, Default)]
 pub struct CurrentArea(pub Area);
+impl CurrentArea {}
 
 #[derive(Resource, Default)]
 pub struct CurrentAreaSet(pub Vec<Area>);
@@ -68,6 +70,16 @@ pub struct Area {
     pub weighting_loot: Weighting,
     pub weighting_enemy: Weighting,
 }
+impl Area {
+    pub fn forest() -> Self {
+        Area {
+            name: "Default Forest".to_string(),
+            kind: AreaKind::Forest,
+            weighting_loot: Weighting::default(),
+            weighting_enemy: Weighting::default(),
+        }
+    }
+}
 
 #[derive(Default, Clone, Copy, Serialize, Deserialize, PartialEq)]
 pub enum AreaKind {
@@ -81,19 +93,23 @@ pub enum AreaKind {
 #[derive(Event)]
 pub struct SetArea(pub AreaKind);
 
-pub fn ev_set_area(
+pub fn evr_set_area(
     mut evr_set_area: EventReader<SetArea>,
     mut current_area: ResMut<CurrentArea>,
+    mut current_area_set: ResMut<CurrentAreaSet>,
     areas: Res<Areas>,
 ) {
     for ev in evr_set_area.read() {
-        current_area.0 = match ev.0 {
-            AreaKind::Default => Area::default(),
-            AreaKind::Forest => match areas.0.iter().find(|a| a.kind == ev.0) {
-                Some(area) => area.clone(),
-                None => Area::default(),
-            },
-            _ => Area::default(),
-        };
+        current_area_set.0.clear();
+        for area in areas.0.iter() {
+            if area.kind == ev.0 {
+                current_area_set.0.push(area.clone());
+            }
+        }
+        current_area.0 = current_area_set
+            .0
+            .first()
+            .expect("[ERROR] Invalid Area Set")
+            .clone();
     }
 }

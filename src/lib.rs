@@ -5,15 +5,12 @@ mod encounter;
 mod loading;
 mod menu;
 mod player;
-
-use std::cmp::Ordering;
+mod save;
 
 use area::AreaPlugin;
 use background::BackgroundPlugin;
 use bevy::{
     prelude::*,
-    reflect::List,
-    utils::HashMap,
     window::{WindowResized, WindowTheme},
 };
 use character::CharacterPlugin;
@@ -22,6 +19,7 @@ use loading::LoadingPlugin;
 use menu::MenuPlugin;
 use player::PlayerPlugin;
 use rand::prelude::*;
+use save::SavePlugin;
 use serde::{Deserialize, Serialize};
 
 pub struct GamePlugin;
@@ -57,6 +55,7 @@ impl Plugin for GamePlugin {
             CharacterPlugin,
             AreaPlugin,
             EncounterPlugin,
+            SavePlugin,
         ));
         app.insert_resource(Resolutions::default());
         app.insert_resource(Msaa::Off);
@@ -111,6 +110,7 @@ pub enum AppState {
     Menu,
     Playing,
     Settings,
+    Exit,
 }
 
 #[derive(SubStates, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Default)]
@@ -189,8 +189,6 @@ impl Weighting {
         Chance { value, result }
     }
 }
-
-// TODO: would like this all to be generics
 
 // SETUP
 
