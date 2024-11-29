@@ -38,29 +38,17 @@ impl Default for CharacterBundle {
 pub struct Character;
 
 #[derive(Component, Clone, Default)]
-pub struct Constitution {
-    pub lvl: Level,
-}
+pub struct Constitution(pub Level);
 
 #[derive(Component, Clone, Default)]
-pub struct Strength {
-    pub lvl: Level,
-}
+pub struct Strength(pub Level);
 #[derive(Component, Clone, Default)]
-pub struct Dexterity {
-    pub lvl: Level,
-}
+pub struct Dexterity(pub Level);
 #[derive(Component, Clone, Default)]
-pub struct Intelligence {
-    pub lvl: Level,
-}
+pub struct Intelligence(pub Level);
 #[derive(Component, Clone, Default)]
-pub struct Wisdom {
-    pub lvl: Level,
-}
+pub struct Wisdom(pub Level);
 #[derive(Component, Clone, Default)]
-pub struct Luck {
-    pub lvl: Level,
-}
+pub struct Luck(pub Level);
 #[derive(Component, Clone, Copy, Default)]
 pub struct Level(pub i32);

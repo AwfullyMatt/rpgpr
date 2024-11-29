@@ -6,6 +6,7 @@ mod loading;
 mod menu;
 mod player;
 mod save;
+mod weapon;
 
 use area::AreaPlugin;
 use background::BackgroundPlugin;
@@ -21,6 +22,7 @@ use player::PlayerPlugin;
 use rand::prelude::*;
 use save::SavePlugin;
 use serde::{Deserialize, Serialize};
+use weapon::WeaponPlugin;
 
 pub struct GamePlugin;
 
@@ -56,6 +58,7 @@ impl Plugin for GamePlugin {
             AreaPlugin,
             EncounterPlugin,
             SavePlugin,
+            WeaponPlugin,
         ));
         app.insert_resource(Resolutions::default());
         app.insert_resource(Msaa::Off);

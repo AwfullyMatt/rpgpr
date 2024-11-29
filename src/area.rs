@@ -16,6 +16,7 @@ impl Plugin for AreaPlugin {
         app.init_resource::<Areas>()
             .init_resource::<CurrentArea>()
             .init_resource::<CurrentAreaSet>()
+            .add_event::<SetArea>()
             .add_systems(Startup, setup)
             .add_systems(Update, evr_set_area.run_if(in_state(AppState::Playing)));
     }
@@ -55,7 +56,7 @@ impl Display for Areas {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut string: String = String::new();
         for area in self.0.iter() {
-            string.push_str(&area.name);
+            string.push_str(&area.title);
             string.push_str(&", ");
         }
 
@@ -65,7 +66,7 @@ impl Display for Areas {
 
 #[derive(Component, Clone, Serialize, Deserialize, Default)]
 pub struct Area {
-    pub name: String,
+    pub title: String,
     pub kind: AreaKind,
     pub weighting_loot: Weighting,
     pub weighting_enemy: Weighting,
@@ -73,7 +74,7 @@ pub struct Area {
 impl Area {
     pub fn forest() -> Self {
         Area {
-            name: "Default Forest".to_string(),
+            title: "Default Forest".to_string(),
             kind: AreaKind::Forest,
             weighting_loot: Weighting::default(),
             weighting_enemy: Weighting::default(),
