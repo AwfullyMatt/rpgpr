@@ -3,9 +3,10 @@ mod background;
 mod character;
 mod encounter;
 mod loading;
-mod menu;
 mod player;
 mod save;
+mod settings;
+mod ui;
 mod weapon;
 
 use area::AreaPlugin;
@@ -17,11 +18,12 @@ use bevy::{
 use character::CharacterPlugin;
 use encounter::EncounterPlugin;
 use loading::LoadingPlugin;
-use menu::MenuPlugin;
 use player::PlayerPlugin;
 use rand::prelude::*;
 use save::SavePlugin;
 use serde::{Deserialize, Serialize};
+use settings::SettingsPlugin;
+use ui::MenuPlugin;
 use weapon::WeaponPlugin;
 
 pub struct GamePlugin;
@@ -59,14 +61,14 @@ impl Plugin for GamePlugin {
             EncounterPlugin,
             SavePlugin,
             WeaponPlugin,
+            SettingsPlugin,
         ));
-        app.insert_resource(Resolutions::default());
         app.insert_resource(Msaa::Off);
         app.insert_resource(ClearColor(Color::linear_rgb(0.1, 0.1, 0.1)));
         app.init_resource::<SpawnLocations>();
         app.init_state::<AppState>();
         app.add_sub_state::<GameState>();
-        app.add_systems(Startup, (spawn_camera, set_initial_resolution));
+        app.add_systems(Startup, spawn_camera);
         app.add_systems(Update, initialize_spawn_locations);
     }
 }
@@ -81,22 +83,6 @@ pub const BACKGROUND_SCALE: f32 = 5.;
 pub const BACKGROUND_LAYER: f32 = 0.;
 
 // GLOBAL RESOURCES
-
-#[derive(Resource)]
-pub struct Resolutions {
-    sd: Vec2,  // 480p
-    hd: Vec2,  // 1080p
-    uhd: Vec2, // 2160p
-}
-impl Resolutions {
-    fn default() -> Self {
-        Resolutions {
-            sd: Vec2::new(640., 480.),
-            hd: Vec2::new(1920., 1080.),
-            uhd: Vec2::new(3840., 2160.),
-        }
-    }
-}
 
 #[derive(Resource, Default)]
 pub struct SpawnLocations {
@@ -123,6 +109,9 @@ pub enum GameState {
     Home,
     Combat,
 }
+
+#[derive(Component, Clone, Default, Deref, DerefMut, Deserialize, Serialize)]
+pub struct Title(pub String);
 
 #[derive(Clone, Copy, Default, Deserialize, Serialize)]
 pub struct Chance {
@@ -201,13 +190,6 @@ fn spawn_camera(mut commands: Commands) {
         Camera2dBundle::default(),
         IsDefaultUiCamera,
     ));
-}
-
-fn set_initial_resolution(mut query_window: Query<&mut Window, Changed<Window>>) {
-    if let Ok(mut window) = query_window.get_single_mut() {
-        window.resolution.set(1920., 1080.);
-        info!("[MODIFIED] Window Resolution : 1080p");
-    }
 }
 
 fn initialize_spawn_locations(
