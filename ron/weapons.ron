@@ -1,9 +1,18 @@
 ([
 	(
-		id: (1),
-		title: ("Cane"),
-		kind: CANE,
-		weight: LIGHT,
-		hand: ONE,
+		id: (1), // ID(usize)
+		title: ("Cane"), // Title(String)
+		kind: CANE, // WeaponKind::Kind
+		weight: LIGHT, // WeaponWeight::Weight
+		hand: ONE, // WeaponHand::Hand
+		damage: ((1)), // WeaponDamage(Damage(i32))
+	),
+	(
+		id: (2),
+		title: ("Pacifier"),
+		kind: PACIFIER,
+		weight: FEATHER,
+		hand: SPECIAL,
+		damage: ((0)),
 	)
 ])

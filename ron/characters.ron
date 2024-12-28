@@ -1,13 +1,27 @@
 ([
 	(
+		character: (), // Character()
+		id: (1),
+		title: ("Old Man"), // Title(String)
+		constitution: ((1)), // <T>(<Score>(i32))
+		strength: ((1)), // '
+		dexterity: ((1)), // '
+		intelligence: ((3)), // '
+		wisdom: ((4)), // '
+		luck: ((2)), // '
+		dwid: (1), // ID(usize)
+	),
+	(
 		character: (),
-		title: ("Old Man"),
+		id: (2),
+		title: ("Literal Baby"),
 		constitution: ((1)),
 		strength: ((1)),
 		dexterity: ((1)),
-		intelligence: ((3)),
-		wisdom: ((4)),
-		luck: ((2)),
-		dwid: (1),
+		intelligence: ((1)),
+		wisdom: ((1)),
+		luck: ((6)),
+		dwid: (2),
 	)
+
 ])

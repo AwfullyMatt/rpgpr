@@ -1,10 +1,8 @@
-use std::{fmt::Display, fs::File};
-
+use crate::{Damage, Title, ID};
 use bevy::prelude::*;
 use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
-
-use crate::{Title, ID};
+use std::{fmt::Display, fs::File};
 
 pub struct WeaponPlugin;
 impl Plugin for WeaponPlugin {
@@ -50,32 +48,35 @@ impl Display for Weapons {
 
 #[derive(Component, Clone, Serialize, Deserialize)]
 pub struct Weapon {
-    pub id: ID,
+    pub id: WeaponID,
     pub title: Title,
     pub kind: WeaponKind,
     pub weight: WeaponWeight,
     pub hand: WeaponHand,
+    pub damage: WeaponDamage,
 }
 impl Weapon {
     pub fn default() -> Self {
         Self {
-            id: ID(0),
+            id: WeaponID::default(),
             title: Title("Default Weapon".to_string()),
-            kind: WeaponKind::DEFAULT,
-            weight: WeaponWeight::DEFAULT,
-            hand: WeaponHand::SPECIAL,
+            kind: WeaponKind::default(),
+            weight: WeaponWeight::default(),
+            hand: WeaponHand::default(),
+            damage: WeaponDamage::default(),
         }
     }
 }
 
-#[derive(Default, Clone, Serialize, Deserialize)]
+#[derive(Component, Default, Clone, Serialize, Deserialize)]
 pub enum WeaponKind {
     #[default]
     DEFAULT,
     CANE,
+    PACIFIER,
 }
 
-#[derive(Default, Clone, Serialize, Deserialize)]
+#[derive(Component, Default, Clone, Serialize, Deserialize)]
 pub enum WeaponWeight {
     #[default]
     DEFAULT,
@@ -86,10 +87,17 @@ pub enum WeaponWeight {
     ULTRA,
 }
 
-#[derive(Default, Clone, Serialize, Deserialize)]
+#[derive(Component, Default, Clone, Serialize, Deserialize)]
 pub enum WeaponHand {
     #[default]
+    DEFAULT,
     ONE,
     TWO,
     SPECIAL,
 }
+
+#[derive(Component, Default, Clone, Serialize, Deserialize, Deref, DerefMut)]
+pub struct WeaponDamage(pub Damage);
+
+#[derive(Component, Default, Clone, Copy, Serialize, Deserialize, Deref, DerefMut)]
+pub struct WeaponID(pub ID);

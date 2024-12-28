@@ -1,10 +1,8 @@
-use std::{fmt::Display, fs::File};
-
+use crate::{AppState, Weighting};
 use bevy::prelude::*;
 use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
-
-use crate::{AppState, Weighting};
+use std::{fmt::Display, fs::File};
 
 pub struct AreaPlugin;
 impl Plugin for AreaPlugin {
@@ -13,17 +11,12 @@ impl Plugin for AreaPlugin {
     }
 
     fn build(&self, app: &mut App) {
-        app.init_resource::<Areas>()
+        app.insert_resource(Areas::init())
             .init_resource::<CurrentArea>()
             .init_resource::<CurrentAreaSet>()
             .add_event::<SetArea>()
-            .add_systems(Startup, setup)
             .add_systems(Update, evr_set_area.run_if(in_state(AppState::Playing)));
     }
-}
-
-fn setup(mut areas: ResMut<Areas>) {
-    *areas = Areas::init();
 }
 
 #[derive(Resource, Default)]
@@ -75,7 +68,7 @@ impl Area {
     pub fn forest() -> Self {
         Area {
             title: "Default Forest".to_string(),
-            kind: AreaKind::Forest,
+            kind: AreaKind::default(),
             weighting_loot: Weighting::default(),
             weighting_enemy: Weighting::default(),
         }

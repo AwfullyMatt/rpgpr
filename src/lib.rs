@@ -45,6 +45,7 @@ impl Plugin for GamePlugin {
                     .into(),
                     ..default()
                 })
+                // NOT NEEDED - BEVY ASSET LOADER
                 .set(AssetPlugin {
                     meta_check: bevy::asset::AssetMetaCheck::Never,
                     ..default()
@@ -64,6 +65,7 @@ impl Plugin for GamePlugin {
             WeaponPlugin,
             SettingsPlugin,
         ));
+        // MIGHT BE A TOGGLEABLE SETTING
         app.insert_resource(Msaa::Off);
         app.insert_resource(ClearColor(Color::linear_rgb(
             CLEARCOLOR.0,
@@ -75,6 +77,70 @@ impl Plugin for GamePlugin {
         app.add_sub_state::<GameState>();
         app.add_systems(Startup, spawn_camera);
         app.add_systems(Update, initialize_spawn_locations);
+    }
+}
+
+// SETUP
+
+fn spawn_camera(mut commands: Commands) {
+    commands.spawn((
+        Name::new("Camera"),
+        Camera2dBundle::default(),
+        IsDefaultUiCamera,
+    ));
+}
+
+fn initialize_spawn_locations(
+    mut evr_window_resized: EventReader<WindowResized>,
+    mut spawn_locations: ResMut<SpawnLocations>,
+) {
+    for ev in evr_window_resized.read() {
+        let x = ev.width;
+        let middle = 0.;
+        let lane_one = 0.;
+        let lane_two = 200.;
+        let lane_three = -200.;
+        let character_one = Vec3::new(middle - (x / 2.) + 200., lane_one, CHARACTER_LAYER);
+        let character_two = Vec3::new(middle - (x / 2.) + 200., lane_two, CHARACTER_LAYER);
+        let character_three = Vec3::new(middle - (x / 2.) + 200., lane_three, CHARACTER_LAYER);
+        let characters_array = [character_one, character_two, character_three];
+        spawn_locations.characters = characters_array;
+        let background_gap = 320.;
+        let backgrounds_one = Vec3::new(middle, middle, BACKGROUND_LAYER);
+        let backgrounds_two = Vec3::new(middle - background_gap, middle, BACKGROUND_LAYER);
+        let backgrounds_three = Vec3::new(middle - (background_gap * 2.), middle, BACKGROUND_LAYER);
+        let backgrounds_four = Vec3::new(middle - (background_gap * 3.), middle, BACKGROUND_LAYER);
+        let backgrounds_five = Vec3::new(middle + background_gap, middle, BACKGROUND_LAYER);
+        let backgrounds_six = Vec3::new(middle + (background_gap * 2.), middle, BACKGROUND_LAYER);
+        let backgrounds_seven = Vec3::new(middle + (background_gap * 3.), middle, BACKGROUND_LAYER);
+        let backgrounds_eight = Vec3::new(middle + (background_gap * 4.), middle, BACKGROUND_LAYER);
+        let backgrounds_nine = Vec3::new(
+            middle + (background_gap * 4.5) - 2., // 2 pixels underlay to prevent bg gaps
+            middle,
+            BACKGROUND_LAYER,
+        );
+        let backgrounds_array = [
+            backgrounds_one,
+            backgrounds_two,
+            backgrounds_three,
+            backgrounds_four,
+            backgrounds_five,
+            backgrounds_six,
+            backgrounds_seven,
+            backgrounds_eight,
+            backgrounds_nine,
+        ];
+        spawn_locations.backgrounds = backgrounds_array;
+        let encounter_one = Vec3::new(x + 100., lane_one, ENCOUNTER_LAYER);
+        let encounter_two = Vec3::new(x + 100., lane_two, ENCOUNTER_LAYER);
+        let encounter_three = Vec3::new(x + 100., lane_three, ENCOUNTER_LAYER);
+        let encounter_array = [encounter_one, encounter_two, encounter_three];
+        spawn_locations.encounters = encounter_array;
+        let despawn_left = -(ev.width / 2.) - (background_gap / 2.);
+        let despawn_right = (ev.width * 2.) + (background_gap / 2.);
+        let despawn_array = [despawn_left, despawn_right];
+        spawn_locations.despawns = despawn_array;
+        info!("[INITIALIZED] [RESOURCE] Spawn Locations");
     }
 }
 
@@ -98,6 +164,8 @@ pub struct SpawnLocations {
     despawns: [f32; 2],
 }
 
+// GLOBAL STATES
+
 #[derive(States, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Default)]
 pub enum AppState {
     #[default]
@@ -116,11 +184,18 @@ pub enum GameState {
     Combat,
 }
 
+// GLOBAL COMPONENTS
+
 #[derive(Component, Clone, Default, Deref, DerefMut, Deserialize, Serialize)]
 pub struct Title(pub String);
 
-#[derive(Component, Clone, Default, Deref, DerefMut, Deserialize, Serialize)]
+#[derive(Component, Clone, Copy, Default, Deref, DerefMut, Deserialize, Serialize)]
 pub struct ID(pub usize);
+
+#[derive(Default, Clone, Serialize, Deserialize, Deref, DerefMut)]
+pub struct Damage(pub i32);
+
+// GLOBAL STRUCTS
 
 #[derive(Clone, Copy, Default, Deserialize, Serialize)]
 pub struct Chance {
@@ -188,69 +263,5 @@ impl Weighting {
             }
         }
         Chance { value, result }
-    }
-}
-
-// SETUP
-
-fn spawn_camera(mut commands: Commands) {
-    commands.spawn((
-        Name::new("Camera"),
-        Camera2dBundle::default(),
-        IsDefaultUiCamera,
-    ));
-}
-
-fn initialize_spawn_locations(
-    mut evr_window_resized: EventReader<WindowResized>,
-    mut spawn_locations: ResMut<SpawnLocations>,
-) {
-    for ev in evr_window_resized.read() {
-        let x = ev.width;
-        let middle = 0.;
-        let lane_one = 0.;
-        let lane_two = 200.;
-        let lane_three = -200.;
-        let character_one = Vec3::new(middle - (x / 2.) + 200., lane_one, CHARACTER_LAYER);
-        let character_two = Vec3::new(middle - (x / 2.) + 200., lane_two, CHARACTER_LAYER);
-        let character_three = Vec3::new(middle - (x / 2.) + 200., lane_three, CHARACTER_LAYER);
-        let characters_array = [character_one, character_two, character_three];
-        spawn_locations.characters = characters_array;
-        let background_gap = 320.;
-        let backgrounds_one = Vec3::new(middle, middle, BACKGROUND_LAYER);
-        let backgrounds_two = Vec3::new(middle - background_gap, middle, BACKGROUND_LAYER);
-        let backgrounds_three = Vec3::new(middle - (background_gap * 2.), middle, BACKGROUND_LAYER);
-        let backgrounds_four = Vec3::new(middle - (background_gap * 3.), middle, BACKGROUND_LAYER);
-        let backgrounds_five = Vec3::new(middle + background_gap, middle, BACKGROUND_LAYER);
-        let backgrounds_six = Vec3::new(middle + (background_gap * 2.), middle, BACKGROUND_LAYER);
-        let backgrounds_seven = Vec3::new(middle + (background_gap * 3.), middle, BACKGROUND_LAYER);
-        let backgrounds_eight = Vec3::new(middle + (background_gap * 4.), middle, BACKGROUND_LAYER);
-        let backgrounds_nine = Vec3::new(
-            middle + (background_gap * 4.5) - 2., // 2 pixels underlay to prevent bg gaps
-            middle,
-            BACKGROUND_LAYER,
-        );
-        let backgrounds_array = [
-            backgrounds_one,
-            backgrounds_two,
-            backgrounds_three,
-            backgrounds_four,
-            backgrounds_five,
-            backgrounds_six,
-            backgrounds_seven,
-            backgrounds_eight,
-            backgrounds_nine,
-        ];
-        spawn_locations.backgrounds = backgrounds_array;
-        let encounter_one = Vec3::new(x + 100., lane_one, ENCOUNTER_LAYER);
-        let encounter_two = Vec3::new(x + 100., lane_two, ENCOUNTER_LAYER);
-        let encounter_three = Vec3::new(x + 100., lane_three, ENCOUNTER_LAYER);
-        let encounter_array = [encounter_one, encounter_two, encounter_three];
-        spawn_locations.encounters = encounter_array;
-        let despawn_left = -(ev.width / 2.) - (background_gap / 2.);
-        let despawn_right = (ev.width * 2.) + (background_gap / 2.);
-        let despawn_array = [despawn_left, despawn_right];
-        spawn_locations.despawns = despawn_array;
-        info!("[INITIALIZED] [RESOURCE] Spawn Locations");
     }
 }

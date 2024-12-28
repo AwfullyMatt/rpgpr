@@ -1,18 +1,21 @@
-use bevy::prelude::*;
-
 use crate::AppState;
+use bevy::prelude::*;
 
 pub struct MenuPlugin;
 impl Plugin for MenuPlugin {
+    fn name(&self) -> &str {
+        "Menu Plugin"
+    }
+
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, dummy_system)
-            .add_systems(OnEnter(AppState::Menu), spawn_main_menu)
-            .add_systems(Update, escape_to_menu)
+        app.add_systems(OnEnter(AppState::Menu), spawn_main_menu)
+            .add_systems(Update, escape_to_menu.run_if(in_state(AppState::Settings)))
             .add_systems(Update, menu_button_press.run_if(in_state(AppState::Menu)))
             .add_systems(OnExit(AppState::Menu), despawn_main_menu);
     }
 }
 
+// attached to all main menu components for cleanup
 #[derive(Component, Clone, Copy)]
 pub struct CleanupMainMenu;
 
@@ -23,103 +26,62 @@ pub enum MainMenuButton {
     Exit,
 }
 
-fn dummy_system() {}
-
 fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let node_style = Style {
+        width: Val::Percent(100.),
+        height: Val::Percent(100.),
+        align_items: AlignItems::Center,
+        justify_content: JustifyContent::Center,
+        ..default()
+    };
+    let button_style = Style {
+        width: Val::Px(200.),
+        height: Val::Px(50.),
+        border: UiRect::all(Val::Px(5.0)),
+        justify_content: JustifyContent::Center,
+        align_items: AlignItems::Center,
+        ..default()
+    };
+    let button_bundle = ButtonBundle {
+        style: button_style.clone(),
+        border_color: BorderColor(Color::BLACK),
+        border_radius: BorderRadius::MAX,
+        background_color: Color::WHITE.into(),
+        ..default()
+    };
+    let text_style = TextStyle {
+        font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+        font_size: 40.,
+        color: Color::BLACK,
+    };
     commands
         .spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.),
-                height: Val::Percent(100.),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                ..default()
-            },
+            style: node_style.clone(),
             ..default()
         })
         .insert(CleanupMainMenu)
         .with_children(|parent| {
             parent
-                .spawn(ButtonBundle {
-                    style: Style {
-                        width: Val::Px(200.),
-                        height: Val::Px(50.),
-                        border: UiRect::all(Val::Px(5.0)),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        ..default()
-                    },
-                    border_color: BorderColor(Color::BLACK),
-                    border_radius: BorderRadius::MAX,
-                    background_color: Color::WHITE.into(),
-                    ..default()
-                })
+                .spawn(button_bundle.clone())
                 .insert(MainMenuButton::Play)
                 .with_children(|parent| {
-                    parent.spawn(TextBundle::from_section(
-                        "Play",
-                        TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                            font_size: 40.,
-                            color: Color::BLACK,
-                        },
-                    ));
+                    parent.spawn(TextBundle::from_section("Play", text_style.clone()));
                 });
         })
         .with_children(|parent| {
             parent
-                .spawn(ButtonBundle {
-                    style: Style {
-                        width: Val::Px(200.),
-                        height: Val::Px(50.),
-                        border: UiRect::all(Val::Px(5.0)),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        ..default()
-                    },
-                    border_color: BorderColor(Color::BLACK),
-                    border_radius: BorderRadius::MAX,
-                    background_color: Color::WHITE.into(),
-                    ..default()
-                })
+                .spawn(button_bundle.clone())
                 .insert(MainMenuButton::Settings)
                 .with_children(|parent| {
-                    parent.spawn(TextBundle::from_section(
-                        "Settings",
-                        TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                            font_size: 40.,
-                            color: Color::BLACK,
-                        },
-                    ));
+                    parent.spawn(TextBundle::from_section("Settings", text_style.clone()));
                 });
         })
         .with_children(|parent| {
             parent
-                .spawn(ButtonBundle {
-                    style: Style {
-                        width: Val::Px(200.),
-                        height: Val::Px(50.),
-                        border: UiRect::all(Val::Px(5.0)),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        ..default()
-                    },
-                    border_color: BorderColor(Color::BLACK),
-                    border_radius: BorderRadius::MAX,
-                    background_color: Color::WHITE.into(),
-                    ..default()
-                })
+                .spawn(button_bundle.clone())
                 .insert(MainMenuButton::Exit)
                 .with_children(|parent| {
-                    parent.spawn(TextBundle::from_section(
-                        "Exit",
-                        TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                            font_size: 40.,
-                            color: Color::BLACK,
-                        },
-                    ));
+                    parent.spawn(TextBundle::from_section("Exit", text_style.clone()));
                 });
         });
 

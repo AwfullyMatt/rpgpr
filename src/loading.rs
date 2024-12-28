@@ -1,11 +1,14 @@
+use crate::AppState;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
-
-use crate::AppState;
 
 pub struct LoadingPlugin;
 
 impl Plugin for LoadingPlugin {
+    fn name(&self) -> &str {
+        "Loading Plugin"
+    }
+
     fn build(&self, app: &mut App) {
         app.add_loading_state(
             LoadingState::new(AppState::Loading)

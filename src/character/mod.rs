@@ -1,10 +1,8 @@
-use std::{fmt::Display, fs::File};
-
+use crate::{weapon::WeaponID, Title, ID};
 use bevy::prelude::*;
 use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
-
-use crate::{weapon::Weapon, Title, ID};
+use std::{fmt::Display, fs::File};
 
 pub struct CharacterPlugin;
 
@@ -48,6 +46,7 @@ impl Display for Characters {
 #[derive(Bundle, Clone, Deserialize, Serialize)]
 pub struct CharacterBundle {
     pub character: Character,
+    pub id: CharacterID,
     pub title: Title,
     pub constitution: Constitution,
     pub strength: Strength,
@@ -55,12 +54,13 @@ pub struct CharacterBundle {
     pub intelligence: Intelligence,
     pub wisdom: Wisdom,
     pub luck: Luck,
-    pub dwid: ID,
+    pub dwid: WeaponID, // default weapon ID
 }
 impl Default for CharacterBundle {
     fn default() -> Self {
         Self {
             character: Character,
+            id: CharacterID::default(),
             title: Title::default(),
             constitution: Constitution::default(),
             strength: Strength::default(),
@@ -68,26 +68,26 @@ impl Default for CharacterBundle {
             intelligence: Intelligence::default(),
             wisdom: Wisdom::default(),
             luck: Luck::default(),
-            dwid: ID(0),
+            dwid: WeaponID::default(),
         }
     }
 }
 
-#[derive(Component, Clone, Deserialize, Serialize)]
+#[derive(Component, Clone, Copy, Deserialize, Serialize)]
 pub struct Character;
-
-#[derive(Component, Clone, Default, Deserialize, Serialize)]
+#[derive(Component, Clone, Copy, Default, Deserialize, Serialize)]
+pub struct CharacterID(pub ID);
+#[derive(Component, Clone, Copy, Default, Deserialize, Serialize)]
 pub struct Constitution(pub Level);
-
-#[derive(Component, Clone, Default, Deserialize, Serialize)]
+#[derive(Component, Clone, Copy, Default, Deserialize, Serialize)]
 pub struct Strength(pub Level);
-#[derive(Component, Clone, Default, Deserialize, Serialize)]
+#[derive(Component, Clone, Copy, Default, Deserialize, Serialize)]
 pub struct Dexterity(pub Level);
-#[derive(Component, Clone, Default, Deserialize, Serialize)]
+#[derive(Component, Clone, Copy, Default, Deserialize, Serialize)]
 pub struct Intelligence(pub Level);
-#[derive(Component, Clone, Default, Deserialize, Serialize)]
+#[derive(Component, Clone, Copy, Default, Deserialize, Serialize)]
 pub struct Wisdom(pub Level);
-#[derive(Component, Clone, Default, Deserialize, Serialize)]
+#[derive(Component, Clone, Copy, Default, Deserialize, Serialize)]
 pub struct Luck(pub Level);
 #[derive(Component, Clone, Copy, Default, Deserialize, Serialize)]
 pub struct Level(pub i32);

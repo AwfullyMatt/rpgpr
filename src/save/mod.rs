@@ -1,14 +1,12 @@
-use std::{
-    fs::File,
-    io::{self, Result},
-};
-
+use crate::{area::Area, AppState};
 use bevy::prelude::*;
 use log::info;
 use ron::{de::from_reader, ser::to_writer};
 use serde::{Deserialize, Serialize};
-
-use crate::{area::Area, AppState};
+use std::{
+    fs::File,
+    io::{self, Result},
+};
 
 pub struct SavePlugin;
 impl Plugin for SavePlugin {
