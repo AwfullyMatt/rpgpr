@@ -1,6 +1,7 @@
 ([
 	(
-		title: "Cane",
+		id: (1),
+		title: ("Cane"),
 		kind: CANE,
 		weight: LIGHT,
 		hand: ONE,

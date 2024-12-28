@@ -1,1 +1,13 @@
-([])
+([
+	(
+		character: (),
+		title: ("Old Man"),
+		constitution: ((1)),
+		strength: ((1)),
+		dexterity: ((1)),
+		intelligence: ((3)),
+		wisdom: ((4)),
+		luck: ((2)),
+		dwid: (1),
+	)
+])

@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
 
-use crate::Title;
+use crate::{weapon::Weapon, Title, ID};
 
 pub struct CharacterPlugin;
 
@@ -55,6 +55,7 @@ pub struct CharacterBundle {
     pub intelligence: Intelligence,
     pub wisdom: Wisdom,
     pub luck: Luck,
+    pub dwid: ID,
 }
 impl Default for CharacterBundle {
     fn default() -> Self {
@@ -67,6 +68,7 @@ impl Default for CharacterBundle {
             intelligence: Intelligence::default(),
             wisdom: Wisdom::default(),
             luck: Luck::default(),
+            dwid: ID(0),
         }
     }
 }

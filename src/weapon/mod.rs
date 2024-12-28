@@ -4,6 +4,8 @@ use bevy::prelude::*;
 use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
 
+use crate::{Title, ID};
+
 pub struct WeaponPlugin;
 impl Plugin for WeaponPlugin {
     fn name(&self) -> &str {
@@ -48,10 +50,22 @@ impl Display for Weapons {
 
 #[derive(Component, Clone, Serialize, Deserialize)]
 pub struct Weapon {
-    pub title: String,
+    pub id: ID,
+    pub title: Title,
     pub kind: WeaponKind,
     pub weight: WeaponWeight,
     pub hand: WeaponHand,
+}
+impl Weapon {
+    pub fn default() -> Self {
+        Self {
+            id: ID(0),
+            title: Title("Default Weapon".to_string()),
+            kind: WeaponKind::DEFAULT,
+            weight: WeaponWeight::DEFAULT,
+            hand: WeaponHand::SPECIAL,
+        }
+    }
 }
 
 #[derive(Default, Clone, Serialize, Deserialize)]

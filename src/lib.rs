@@ -49,6 +49,7 @@ impl Plugin for GamePlugin {
                     meta_check: bevy::asset::AssetMetaCheck::Never,
                     ..default()
                 })
+                // PIXEL PERFECT
                 .set(ImagePlugin::default_nearest()),
         );
         app.add_plugins((
@@ -64,7 +65,11 @@ impl Plugin for GamePlugin {
             SettingsPlugin,
         ));
         app.insert_resource(Msaa::Off);
-        app.insert_resource(ClearColor(Color::linear_rgb(0.1, 0.1, 0.1)));
+        app.insert_resource(ClearColor(Color::linear_rgb(
+            CLEARCOLOR.0,
+            CLEARCOLOR.1,
+            CLEARCOLOR.2,
+        )));
         app.init_resource::<SpawnLocations>();
         app.init_state::<AppState>();
         app.add_sub_state::<GameState>();
@@ -81,6 +86,7 @@ pub const ENCOUNTER_SCALE: f32 = 4.;
 pub const ENCOUNTER_LAYER: f32 = 1.;
 pub const BACKGROUND_SCALE: f32 = 5.;
 pub const BACKGROUND_LAYER: f32 = 0.;
+pub const CLEARCOLOR: (f32, f32, f32) = (0.1, 0.1, 0.1);
 
 // GLOBAL RESOURCES
 
@@ -112,6 +118,9 @@ pub enum GameState {
 
 #[derive(Component, Clone, Default, Deref, DerefMut, Deserialize, Serialize)]
 pub struct Title(pub String);
+
+#[derive(Component, Clone, Default, Deref, DerefMut, Deserialize, Serialize)]
+pub struct ID(pub usize);
 
 #[derive(Clone, Copy, Default, Deserialize, Serialize)]
 pub struct Chance {

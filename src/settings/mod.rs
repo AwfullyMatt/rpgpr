@@ -13,13 +13,14 @@ impl Plugin for SettingsPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(Resolutions::init())
             .insert_resource(Settings::load())
-            .add_systems(Startup, set_initial_resolution);
+            .add_systems(Startup, setup);
     }
 }
 
 #[derive(Resource, Default, Serialize, Deserialize)]
 pub struct Settings {
     pub resolution: Vec2,
+    pub monitor: usize,
 }
 impl Settings {
     fn load() -> Self {
@@ -55,14 +56,16 @@ impl Resolutions {
     }
 }
 
-fn set_initial_resolution(
-    mut query_window: Query<&mut Window, Changed<Window>>,
-    settings: Res<Settings>,
-) {
+fn setup(mut query_window: Query<&mut Window>, settings: Res<Settings>) {
     if let Ok(mut window) = query_window.get_single_mut() {
+        // SET WINDOW RESOLUTION
         window
             .resolution
             .set(settings.resolution.x, settings.resolution.y);
+        // SET MONITOR SELECTION
+        window
+            .position
+            .center(MonitorSelection::Index(settings.monitor));
         info!(
             "[MODIFIED] Window Resolution : ({},{})",
             settings.resolution.x, settings.resolution.y
