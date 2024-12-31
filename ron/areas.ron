@@ -1,64 +1,98 @@
 Areas(
 	[
-		Area(
-			title: "Forest 1",
-			kind: Forest,
-			weighting_loot: (
-				chances: [
-					(
-						value: .50,
-						result: FAILURE,
+		(
+			title: ("Frightening Forest"), // Title(String)
+			kind: Forest, // AreaKind
+			weightings: (
+				[
+					( // Weighting()
+						kind: LOOT, // ChanceKind
+						chance: (
+							success: 0.1,
+							failure: 0.9,
+						),
+						pool: {
+							0:0.25,
+							1:0.25,
+							2:0.25,
+							3:0.25,
+						},
 					),
 					(
-						value: .50,
-						result: SUCCESS,
-					)
-				],
-				kind: LOOT,
-			),
-			weighting_enemy: (
-				chances: [
-					(
-						value: .50,
-						result: FAILURE,
+						kind: ENEMY,
+						chance: (
+							success: 0.1,
+							failure: 0.9,
+						),
+						pool: {
+							0:0.25,
+							1:0.25,
+							2:0.25,
+							3:0.25,
+						},
 					),
 					(
-						value: .50,
-						result: SUCCESS,
+						kind: BACKGROUND,
+						chance: (
+							success: 0.1,
+							failure: 0.9,
+						),
+						pool: {
+							0:0.25,
+							1:0.25,
+							2:0.25,
+							3:0.25,
+						},
 					)
-				],
-				kind: ENEMY,
+				]
+			) // Weightings(Vec<Weighting>)
+		),
+		(
+			title: ("Dead Dead Desert"),
+			kind: Desert,
+			weightings: (
+				[
+					(
+						kind: LOOT,
+						chance: (
+							success: 0.1,
+							failure: 0.9,
+						),
+						pool: {
+							0:0.25,
+							1:0.25,
+							2:0.25,
+							3:0.25,
+						},
+					),
+					(
+						kind: ENEMY,
+						chance: (
+							success: 0.1,
+							failure: 0.9,
+						),
+						pool: {
+							0:0.25,
+							1:0.25,
+							2:0.25,
+							3:0.25,
+						},
+					),
+					(
+						kind: BACKGROUND,
+						chance: (
+							success: 0.1,
+							failure: 0.9,
+						),
+						pool: {
+							0:0.25,
+							1:0.25,
+							2:0.25,
+							3:0.25,
+						},
+					)
+				]
 			)
 		),
-		Area(
-			title: "Desert 1",
-			kind: Forest,
-			weighting_loot: (
-				chances: [
-					(
-						value: .75,
-						result: FAILURE,
-					),
-					(
-						value: .25,
-						result: SUCCESS,
-					)
-				],
-				kind: LOOT,
-			),
-			weighting_enemy: (
-				chances: [
-					(
-						value: .25,
-						result: FAILURE,
-					),
-					(
-						value: .75,
-						result: SUCCESS,
-					)
-				],
-				kind: ENEMY,
-			)
-		)
 	]
 )

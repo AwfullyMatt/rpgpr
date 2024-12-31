@@ -1,14 +1,16 @@
-use std::fmt::Display;
-
-use bevy::prelude::*;
-
 use crate::{
     character::Character, loading::SpriteAssets, player::PlayerLoot, AppState, SpawnLocations,
     CHARACTER_LAYER, CHARACTER_SCALE, ENCOUNTER_LAYER, ENCOUNTER_SCALE,
 };
+use bevy::prelude::*;
+use std::fmt::Display;
 
 pub struct EncounterPlugin;
 impl Plugin for EncounterPlugin {
+    fn name(&self) -> &str {
+        "Encounter Plugin"
+    }
+
     fn build(&self, app: &mut App) {
         app.add_event::<SpawnEncounter>().add_systems(
             Update,

@@ -1,10 +1,9 @@
 use bevy::prelude::*;
-use rand::prelude::*;
 
 use crate::{
-    area::{AreaKind, Areas, CurrentArea},
+    area::{AreaKind, CurrentArea},
     loading::SpriteAssets,
-    AppState, SpawnLocations, Weighting, BACKGROUND_SCALE,
+    AppState, SpawnLocations, BACKGROUND_SCALE,
 };
 
 pub struct BackgroundPlugin;
@@ -48,14 +47,11 @@ pub fn evr_spawn_background(
     sprite_assets: Res<SpriteAssets>,
     current_area: Res<CurrentArea>,
     mut commands: Commands,
-    areas: Res<Areas>,
+    //areas: Res<Areas>,
 ) {
     for ev in evr_spawn_background.read() {
         use AreaKind::*;
 
-        //let weighting = Weighting::new(None);
-
-        //for area in areas.0.iter().find(|a| a.kind == current_area.0.kind) {}
         commands.spawn((
             SpriteBundle {
                 texture: match current_area.0.kind {
@@ -81,6 +77,7 @@ pub fn move_backgrounds(mut query_background: Query<(&Background, &mut Transform
     }
 }
 
+// also sends event to spawn next background
 pub fn despawn_background(
     mut commands: Commands,
     spawn_locations: Res<SpawnLocations>,

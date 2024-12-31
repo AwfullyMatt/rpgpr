@@ -1,7 +1,7 @@
 ([
 	(
 		character: (), // Character()
-		id: (1),
+		id: ((1)), // CharacterID(ID(usize))
 		title: ("Old Man"), // Title(String)
 		constitution: ((1)), // <T>(<Score>(i32))
 		strength: ((1)), // '
@@ -9,11 +9,11 @@
 		intelligence: ((3)), // '
 		wisdom: ((4)), // '
 		luck: ((2)), // '
-		dwid: (1), // ID(usize)
+		dwid: ((1)), // WeaponID(ID(usize))
 	),
 	(
 		character: (),
-		id: (2),
+		id: ((2)),
 		title: ("Literal Baby"),
 		constitution: ((1)),
 		strength: ((1)),
@@ -21,7 +21,7 @@
 		intelligence: ((1)),
 		wisdom: ((1)),
 		luck: ((6)),
-		dwid: (2),
+		dwid: ((2)),
 	)
 
 ])

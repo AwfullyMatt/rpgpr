@@ -1,1 +1,1 @@
-((title:"Default Forest",kind:Forest,weighting_loot:(chances:[],kind:DEFAULT),weighting_enemy:(chances:[],kind:DEFAULT)))
+((title:"Default Level",kind:DEFAULT,weighting_bg:(chances:[],kind:DEFAULT),weighting_loot:(chances:[],kind:DEFAULT),weighting_enemy:(chances:[],kind:DEFAULT)))

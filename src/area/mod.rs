@@ -1,4 +1,4 @@
-use crate::{AppState, Weighting};
+use crate::{chance::Weightings, AppState, Title};
 use bevy::prelude::*;
 use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
@@ -7,7 +7,7 @@ use std::{fmt::Display, fs::File};
 pub struct AreaPlugin;
 impl Plugin for AreaPlugin {
     fn name(&self) -> &str {
-        "AreaPlugin"
+        "Area Plugin"
     }
 
     fn build(&self, app: &mut App) {
@@ -59,18 +59,16 @@ impl Display for Areas {
 
 #[derive(Component, Clone, Serialize, Deserialize, Default)]
 pub struct Area {
-    pub title: String,
+    pub title: Title,
     pub kind: AreaKind,
-    pub weighting_loot: Weighting,
-    pub weighting_enemy: Weighting,
+    pub weightings: Weightings,
 }
 impl Area {
     pub fn forest() -> Self {
         Area {
-            title: "Default Forest".to_string(),
+            title: Title("Default Area".to_string()),
             kind: AreaKind::default(),
-            weighting_loot: Weighting::default(),
-            weighting_enemy: Weighting::default(),
+            weightings: Weightings::default(),
         }
     }
 }

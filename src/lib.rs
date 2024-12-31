@@ -1,5 +1,6 @@
 mod area;
 mod background;
+mod chance;
 mod character;
 mod encounter;
 mod loading;
@@ -19,10 +20,9 @@ use character::CharacterPlugin;
 use encounter::EncounterPlugin;
 use loading::LoadingPlugin;
 use player::PlayerPlugin;
-use rand::prelude::*;
 use save::SavePlugin;
 use serde::{Deserialize, Serialize};
-use settings::SettingsPlugin;
+use settings::{Settings, SettingsPlugin};
 use ui::MenuPlugin;
 use weapon::WeaponPlugin;
 
@@ -75,19 +75,36 @@ impl Plugin for GamePlugin {
         app.init_resource::<SpawnLocations>();
         app.init_state::<AppState>();
         app.add_sub_state::<GameState>();
-        app.add_systems(Startup, spawn_camera);
+        app.add_systems(Startup, setup);
         app.add_systems(Update, initialize_spawn_locations);
     }
 }
 
 // SETUP
 
-fn spawn_camera(mut commands: Commands) {
+fn setup(mut commands: Commands, mut query_window: Query<&mut Window>, settings: Res<Settings>) {
+    // SPAWN CAMERA2D
     commands.spawn((
         Name::new("Camera"),
         Camera2dBundle::default(),
         IsDefaultUiCamera,
     ));
+
+    // SET WINDOW RESOLUTION ACCORDING TO SAVED SETTING
+    if let Ok(mut window) = query_window.get_single_mut() {
+        // SET WINDOW RESOLUTION
+        window
+            .resolution
+            .set(settings.resolution.x, settings.resolution.y);
+        // SET MONITOR SELECTION
+        window
+            .position
+            .center(MonitorSelection::Index(settings.monitor));
+        info!(
+            "[MODIFIED] Window Resolution : ({},{})",
+            settings.resolution.x, settings.resolution.y
+        );
+    }
 }
 
 fn initialize_spawn_locations(
@@ -194,74 +211,3 @@ pub struct ID(pub usize);
 
 #[derive(Default, Clone, Serialize, Deserialize, Deref, DerefMut)]
 pub struct Damage(pub i32);
-
-// GLOBAL STRUCTS
-
-#[derive(Clone, Copy, Default, Deserialize, Serialize)]
-pub struct Chance {
-    pub value: f32,
-    pub result: ChanceResult,
-}
-
-#[derive(Clone, Copy, Default, Deserialize, Serialize)]
-pub enum ChanceResult {
-    SUCCESS,
-    #[default]
-    FAILURE,
-}
-
-#[derive(Clone, Default, Deserialize, Serialize)]
-pub enum WeightingKind {
-    #[default]
-    DEFAULT,
-    LOOT,
-    ENEMY,
-}
-
-#[derive(Clone, Default, Deserialize, Serialize)]
-pub struct Weighting {
-    pub chances: Vec<Chance>,
-    pub kind: WeightingKind,
-}
-impl Weighting {
-    pub fn new(weight_success: f32, weight_failure: f32, kind: WeightingKind) -> Self {
-        let mut chances: Vec<Chance> = vec![];
-        chances.push(Chance {
-            value: weight_failure,
-            result: ChanceResult::FAILURE,
-        });
-        chances.push(Chance {
-            value: weight_success,
-            result: ChanceResult::SUCCESS,
-        });
-
-        Self { chances, kind }
-    }
-
-    pub fn weight(&self) -> f32 {
-        let mut weight: f32 = 0.0;
-        for chance in self.chances.iter() {
-            weight += chance.value;
-        }
-        weight
-    }
-
-    pub fn result(&self) -> Chance {
-        let mut rng: ThreadRng = thread_rng();
-        let f: f32 = rng.gen_range(0.0..=self.weight());
-
-        let mut value: f32 = 0.0;
-        let mut min_diff: f32 = (value - f).abs();
-        let mut result: ChanceResult = ChanceResult::default();
-
-        for chance in self.chances.iter() {
-            let diff = (chance.value - f).abs();
-            if diff < min_diff {
-                min_diff = diff;
-                value = chance.value;
-                result = chance.result;
-            }
-        }
-        Chance { value, result }
-    }
-}

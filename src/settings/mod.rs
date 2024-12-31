@@ -1,8 +1,7 @@
-use std::fs::File;
-
 use bevy::prelude::*;
 use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
+use std::fs::File;
 
 pub struct SettingsPlugin;
 impl Plugin for SettingsPlugin {
@@ -12,8 +11,7 @@ impl Plugin for SettingsPlugin {
 
     fn build(&self, app: &mut App) {
         app.insert_resource(Resolutions::init())
-            .insert_resource(Settings::load())
-            .add_systems(Startup, setup);
+            .insert_resource(Settings::load());
     }
 }
 
@@ -53,22 +51,5 @@ impl Resolutions {
             hd: Vec2::new(1920., 1080.),
             uhd: Vec2::new(3840., 2160.),
         }
-    }
-}
-
-fn setup(mut query_window: Query<&mut Window>, settings: Res<Settings>) {
-    if let Ok(mut window) = query_window.get_single_mut() {
-        // SET WINDOW RESOLUTION
-        window
-            .resolution
-            .set(settings.resolution.x, settings.resolution.y);
-        // SET MONITOR SELECTION
-        window
-            .position
-            .center(MonitorSelection::Index(settings.monitor));
-        info!(
-            "[MODIFIED] Window Resolution : ({},{})",
-            settings.resolution.x, settings.resolution.y
-        );
     }
 }
