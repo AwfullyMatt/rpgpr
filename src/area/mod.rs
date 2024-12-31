@@ -1,4 +1,4 @@
-use crate::{chance::Weightings, AppState, Title};
+use crate::{chance::Weighting, AppState, Title};
 use bevy::prelude::*;
 use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
@@ -61,14 +61,18 @@ impl Display for Areas {
 pub struct Area {
     pub title: Title,
     pub kind: AreaKind,
-    pub weightings: Weightings,
+    pub weighting_bg: Weighting,
+    pub weighting_loot: Weighting,
+    pub weighting_enemy: Weighting,
 }
 impl Area {
     pub fn forest() -> Self {
         Area {
             title: Title("Default Area".to_string()),
             kind: AreaKind::default(),
-            weightings: Weightings::default(),
+            weighting_bg: Weighting::default(),
+            weighting_loot: Weighting::default(),
+            weighting_enemy: Weighting::default(),
         }
     }
 }

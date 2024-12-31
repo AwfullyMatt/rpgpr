@@ -46,34 +46,48 @@ impl Weighting {
         }
     }
 
-    pub fn weigh(&self) {
-        let weight: f32 = self.pool.values().sum();
-        let len = self.pool.len();
-        let mut min: f32 = 0.;
-        let mut max: f32 = 0.;
-
-        for &value in self.pool.values() {
-            if min == 0. {
-                min = value;
-            } else {
-                min = min.min(value);
-            }
-
-            if max == 0. {
-                max = value;
-            } else {
-                max = max.max(value);
-            }
-        }
-
-        let vec: Vec<f32> = self
+    pub fn weigh(&self) -> Option<usize> {
+        // Set min/max values for normalization
+        let min: f32 = self
             .pool
             .values()
-            .map(|f| (f - min) / (max - min))
+            .copied()
+            .fold(f32::INFINITY, |x, y| x.min(y));
+        let max: f32 = self
+            .pool
+            .values()
+            .copied()
+            .fold(f32::NEG_INFINITY, |x, y| x.max(y));
+
+        // Clone the hashmap and normalize its chance values
+        // once I determine if pools are immutable or not
+        // I can just mutate the original if necessary
+        let normalized: HashMap<usize, f32> = self
+            .pool
+            .iter()
+            .map(|(k, &v)| {
+                let norm = (v - min) / (max - min);
+                (k.clone(), norm)
+            })
             .collect();
 
+        // Spawn rng thread and gen an f32 from 0 to 1
         let mut rng = thread_rng();
+        let gen = rng.gen_range(0.0..=1.0);
 
-        let f: f32 = rng.gen_range(0.0..1.0);
+        // Cumulative probability to weigh against
+        let mut prob: f32 = 0.0;
+
+        // Find the first entry where
+        let choice: Option<usize> = normalized.iter().find_map(|(k, &v)| {
+            prob += v;
+            if gen < prob {
+                Some(k.clone())
+            } else {
+                None
+            }
+        });
+
+        choice
     }
 }

@@ -3,96 +3,59 @@ Areas(
 		(
 			title: ("Frightening Forest"), // Title(String)
 			kind: Forest, // AreaKind
-			weightings: (
-				[
-					( // Weighting()
-						kind: LOOT, // ChanceKind
-						chance: (
-							success: 0.1,
-							failure: 0.9,
-						),
-						pool: {
-							0:0.25,
-							1:0.25,
-							2:0.25,
-							3:0.25,
-						},
-					),
-					(
-						kind: ENEMY,
-						chance: (
-							success: 0.1,
-							failure: 0.9,
-						),
-						pool: {
-							0:0.25,
-							1:0.25,
-							2:0.25,
-							3:0.25,
-						},
-					),
-					(
-						kind: BACKGROUND,
-						chance: (
-							success: 0.1,
-							failure: 0.9,
-						),
-						pool: {
-							0:0.25,
-							1:0.25,
-							2:0.25,
-							3:0.25,
-						},
-					)
-				]
-			) // Weightings(Vec<Weighting>)
+			weighting_bg: (
+				kind: BACKGROUND, // ChanceKind
+				chance: (
+					success: 1.0,
+					failure: 0.0,
+				), // Chance( success: f32, failure :f32 )
+				pool: {}, // HashMap<usize, f32>
+			),
+			weighting_loot: (
+				kind: LOOT,
+				chance: (
+					success: 0.1,
+					failure: 0.9,
+				),
+				pool: {},
+			),
+			weighting_enemy: (
+				kind: ENEMY,
+				chance: (
+					success: 0.3,
+					failure: 0.7,
+				),
+				pool: {},
+			),
 		),
 		(
 			title: ("Dead Dead Desert"),
 			kind: Desert,
-			weightings: (
-				[
-					(
-						kind: LOOT,
-						chance: (
-							success: 0.1,
-							failure: 0.9,
-						),
-						pool: {
-							0:0.25,
-							1:0.25,
-							2:0.25,
-							3:0.25,
-						},
-					),
-					(
-						kind: ENEMY,
-						chance: (
-							success: 0.1,
-							failure: 0.9,
-						),
-						pool: {
-							0:0.25,
-							1:0.25,
-							2:0.25,
-							3:0.25,
-						},
-					),
-					(
-						kind: BACKGROUND,
-						chance: (
-							success: 0.1,
-							failure: 0.9,
-						),
-						pool: {
-							0:0.25,
-							1:0.25,
-							2:0.25,
-							3:0.25,
-						},
-					)
-				]
-			)
+			weighting_bg: (
+				kind: BACKGROUND, // ChanceKind
+				chance: (
+					success: 1.0,
+					failure: 0.0,
+				), // Chance( success: f32, failure :f32 )
+				pool: {}, // HashMap<usize, f32>
+			),
+			weighting_loot: (
+				kind: LOOT,
+				chance: (
+					success: 0.1,
+					failure: 0.9,
+				),
+				pool: {},
+			),
+			weighting_enemy: (
+				kind: ENEMY,
+				chance: (
+					success: 0.3,
+					failure: 0.7,
+				),
+				pool: {},
+			),
+
 		),
 	]
 )
