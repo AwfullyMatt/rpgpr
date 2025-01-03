@@ -9,7 +9,7 @@ Areas(
 					success: 1.0,
 					failure: 0.0,
 				), // Chance( success: f32, failure :f32 )
-				pool: {}, // HashMap<usize, f32>
+				pool: {0:0.25, 1:0.25, 2:0.25, 3:0.25}, // HashMap<usize, f32>
 			),
 			weighting_loot: (
 				kind: LOOT,

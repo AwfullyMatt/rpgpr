@@ -19,11 +19,11 @@ impl Plugin for AreaPlugin {
     }
 }
 
-#[derive(Resource, Default)]
+#[derive(Resource, Default, Deref, DerefMut)]
 pub struct CurrentArea(pub Area);
 impl CurrentArea {}
 
-#[derive(Resource, Default)]
+#[derive(Resource, Default, Deref, DerefMut)]
 pub struct CurrentAreaSet(pub Vec<Area>);
 
 #[derive(Resource, Default, Serialize, Deserialize)]

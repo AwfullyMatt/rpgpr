@@ -1,6 +1,8 @@
 use crate::{
-    character::Character, loading::SpriteAssets, player::PlayerLoot, AppState, SpawnLocations,
-    CHARACTER_LAYER, CHARACTER_SCALE, ENCOUNTER_LAYER, ENCOUNTER_SCALE,
+    character::Character,
+    loading::{CharacterAssets, ItemAssets},
+    player::PlayerLoot,
+    AppState, SpawnLocations, CHARACTER_LAYER, CHARACTER_SCALE, ENCOUNTER_LAYER, ENCOUNTER_SCALE,
 };
 use bevy::prelude::*;
 use std::fmt::Display;
@@ -64,19 +66,20 @@ impl Display for EncounterKind {
 pub fn evr_spawn_encounter(
     mut commands: Commands,
     spawn_locations: Res<SpawnLocations>,
-    sprite_assets: Res<SpriteAssets>,
+    character_assets: Res<CharacterAssets>,
+    item_assets: Res<ItemAssets>,
     mut evr_spawn_encounter: EventReader<SpawnEncounter>,
 ) {
     for ev in evr_spawn_encounter.read() {
         let x = spawn_locations.encounters[ev.lane].x;
         let (texture, scale, z) = match ev.kind {
             EncounterKind::Combat => (
-                sprite_assets.character_old_man.clone(),
+                character_assets.character_old_man_0.clone(),
                 CHARACTER_SCALE,
                 CHARACTER_LAYER,
             ),
             EncounterKind::Loot => (
-                sprite_assets.loot_money.clone(),
+                item_assets.item_money_0.clone(),
                 ENCOUNTER_SCALE,
                 ENCOUNTER_LAYER,
             ),

@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     area::{AreaKind, CurrentArea},
-    loading::SpriteAssets,
+    loading::BackgroundAssets,
     AppState, SpawnLocations, BACKGROUND_SCALE,
 };
 
@@ -19,6 +19,9 @@ impl Plugin for BackgroundPlugin {
             );
     }
 }
+
+//#[derive(Resource, Default, Clone)] // Would like to deserialize this but unsure how yet
+//pub struct Backgrounds(HashMap<usize, Handle<Image>>); // (Can't serde Handle<Image>)
 
 #[derive(Component, Default)]
 pub struct Background;
@@ -44,7 +47,7 @@ pub fn spawn_initial_backgrounds(mut evw_spawn_background: EventWriter<SpawnBack
 pub fn evr_spawn_background(
     mut evr_spawn_background: EventReader<SpawnBackground>,
     spawn_locations: Res<SpawnLocations>,
-    sprite_assets: Res<SpriteAssets>,
+    background_assets: Res<BackgroundAssets>,
     current_area: Res<CurrentArea>,
     mut commands: Commands,
     //areas: Res<Areas>,
@@ -55,8 +58,8 @@ pub fn evr_spawn_background(
         commands.spawn((
             SpriteBundle {
                 texture: match current_area.0.kind {
-                    Forest => sprite_assets.forest_0.clone(),
-                    _ => sprite_assets.forest_1.clone(),
+                    Forest => background_assets.background_forest_0.clone(),
+                    _ => background_assets.background_forest_1.clone(),
                 },
                 transform: Transform {
                     translation: spawn_locations.backgrounds[**ev],

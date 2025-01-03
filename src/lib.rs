@@ -45,11 +45,11 @@ impl Plugin for GamePlugin {
                     .into(),
                     ..default()
                 })
-                // NOT NEEDED - BEVY ASSET LOADER
-                .set(AssetPlugin {
-                    meta_check: bevy::asset::AssetMetaCheck::Never,
-                    ..default()
-                })
+                // BEVY ASSET LOADER HANDLES THIS
+                //.set(AssetPlugin {
+                //    meta_check: bevy::asset::AssetMetaCheck::Never,
+                //    ..default()
+                //})
                 // PIXEL PERFECT
                 .set(ImagePlugin::default_nearest()),
         );
@@ -107,6 +107,8 @@ fn setup(mut commands: Commands, mut query_window: Query<&mut Window>, settings:
     }
 }
 
+// SET SPAWN COORDINATES ACCORDING TO RESOLUTION
+// THIS RUNS WHENEVER SCREEN IS RESIZED
 fn initialize_spawn_locations(
     mut evr_window_resized: EventReader<WindowResized>,
     mut spawn_locations: ResMut<SpawnLocations>,

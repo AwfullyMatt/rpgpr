@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    character::CharacterBundle, loading::SpriteAssets, AppState, SpawnLocations, CHARACTER_SCALE,
+    character::CharacterBundle, loading::CharacterAssets, AppState, SpawnLocations, CHARACTER_SCALE,
 };
 
 pub struct PlayerPlugin;
@@ -42,14 +42,14 @@ pub struct SpawnPlayer(pub usize);
 pub fn evr_spawn_player(
     mut commands: Commands,
     mut evr_spawn_player: EventReader<SpawnPlayer>,
-    sprite_assets: Res<SpriteAssets>,
+    character_assets: Res<CharacterAssets>,
     spawn_locations: Res<SpawnLocations>,
 ) {
     for ev in evr_spawn_player.read() {
         commands.spawn((
             PlayerBundle::default(),
             SpriteBundle {
-                texture: sprite_assets.character_old_man.clone(),
+                texture: character_assets.character_old_man_0.clone(),
                 transform: Transform {
                     translation: spawn_locations.characters[**ev],
                     scale: Vec3::splat(CHARACTER_SCALE),

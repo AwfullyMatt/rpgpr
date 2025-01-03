@@ -13,7 +13,11 @@ impl Plugin for LoadingPlugin {
         app.add_loading_state(
             LoadingState::new(AppState::Loading)
                 .continue_to_state(AppState::Menu)
-                .load_collection::<SpriteAssets>(),
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>("dynamic.assets.ron")
+                .load_collection::<BackgroundAssets>()
+                .load_collection::<CharacterAssets>()
+                .load_collection::<ItemAssets>()
+                .load_collection::<IconAssets>(),
         );
     }
 }
@@ -21,26 +25,32 @@ impl Plugin for LoadingPlugin {
 #[derive(AssetCollection, Resource)]
 pub struct AudioAssets {}
 
-// TODO: These will eventually need their own resource sets
 #[derive(AssetCollection, Resource)]
-pub struct SpriteAssets {
-    // [BACKGROUNDS]
-    #[asset(path = "sprites/backgrounds/background_forest_0.png")]
-    pub forest_0: Handle<Image>,
-    #[asset(path = "sprites/backgrounds/background_forest_1.png")]
-    pub forest_1: Handle<Image>,
-    #[asset(path = "sprites/backgrounds/background_forest_2.png")]
-    pub forest_2: Handle<Image>,
+pub struct CharacterAssets {
+    #[asset(key = "character_old_man_0")]
+    pub character_old_man_0: Handle<Image>,
+}
 
-    // [CHARACTERS]
-    #[asset(path = "sprites/characters/character_old_man.png")]
-    pub character_old_man: Handle<Image>,
+#[derive(AssetCollection, Resource)]
+pub struct BackgroundAssets {
+    #[asset(key = "background_forest_0")]
+    pub background_forest_0: Handle<Image>,
+    #[asset(key = "background_forest_1")]
+    pub background_forest_1: Handle<Image>,
+    #[asset(key = "background_forest_2")]
+    pub background_forest_2: Handle<Image>,
+    #[asset(key = "background_forest_3")]
+    pub background_forest_3: Handle<Image>,
+}
 
-    // [LOOT]
-    #[asset(path = "sprites/items/item_money.png")]
-    pub loot_money: Handle<Image>,
+#[derive(AssetCollection, Resource)]
+pub struct ItemAssets {
+    #[asset(key = "item_money_0")]
+    pub item_money_0: Handle<Image>,
+}
 
-    // [ICONS]
-    #[asset(path = "sprites/icons/icon_heart.png")]
-    pub icon_heart: Handle<Image>,
+#[derive(AssetCollection, Resource)]
+pub struct IconAssets {
+    #[asset(key = "icon_heart_0")]
+    pub icon_heart_0: Handle<Image>,
 }

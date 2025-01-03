@@ -1,0 +1,30 @@
+({
+    // BACKGROUNDS
+    "background_forest_0": File (
+        path: "sprites/backgrounds/background_forest_0.png",
+    ),
+    "background_forest_1": File (
+        path: "sprites/backgrounds/background_forest_1.png",
+    ),
+    "background_forest_2": File (
+        path: "sprites/backgrounds/background_forest_2.png",
+    ),
+    "background_forest_3": File (
+        path: "sprites/backgrounds/background_forest_3.png",
+    ),
+
+    // CHARACTERS
+    "character_old_man_0": File (
+        path: "sprites/characters/character_old_man_0.png",
+    ),
+
+    // ICONS
+    "icon_heart_0": File (
+        path: "sprites/icons/icon_heart_0.png",
+    ),
+
+    // ITEMS
+    "item_money_0": File (
+        path: "sprites/items/item_money_0.png",
+    ),
+})
