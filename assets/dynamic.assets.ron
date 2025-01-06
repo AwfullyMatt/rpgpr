@@ -1,5 +1,14 @@
 ({
     // BACKGROUNDS
+    "background_forest_atlas": File (
+        path: "sprites/backgrounds/background_forest_atlas.png"
+    ),
+    "background_forest_layout": TextureAtlasLayout (
+        tile_size_x: 64,
+        tile_size_y: 256,
+        columns: 4,
+        rows: 1,
+    ),
     "background_forest_0": File (
         path: "sprites/backgrounds/background_forest_0.png",
     ),

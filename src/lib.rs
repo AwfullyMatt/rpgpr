@@ -46,10 +46,10 @@ impl Plugin for GamePlugin {
                     ..default()
                 })
                 // BEVY ASSET LOADER HANDLES THIS
-                //.set(AssetPlugin {
-                //    meta_check: bevy::asset::AssetMetaCheck::Never,
-                //    ..default()
-                //})
+                .set(AssetPlugin {
+                    meta_check: bevy::asset::AssetMetaCheck::Never,
+                    ..default()
+                })
                 // PIXEL PERFECT
                 .set(ImagePlugin::default_nearest()),
         );
@@ -66,7 +66,7 @@ impl Plugin for GamePlugin {
             SettingsPlugin,
         ));
         // MIGHT BE A TOGGLEABLE SETTING
-        app.insert_resource(Msaa::Off);
+        //app.insert_resource(Msaa::Off); // bevy 15 migration
         app.insert_resource(ClearColor(Color::linear_rgb(
             CLEARCOLOR.0,
             CLEARCOLOR.1,
@@ -84,11 +84,7 @@ impl Plugin for GamePlugin {
 
 fn setup(mut commands: Commands, mut query_window: Query<&mut Window>, settings: Res<Settings>) {
     // SPAWN CAMERA2D
-    commands.spawn((
-        Name::new("Camera"),
-        Camera2dBundle::default(),
-        IsDefaultUiCamera,
-    ));
+    commands.spawn(Camera2d);
 
     // SET WINDOW RESOLUTION ACCORDING TO SAVED SETTING
     if let Ok(mut window) = query_window.get_single_mut() {
@@ -172,6 +168,18 @@ pub const ENCOUNTER_LAYER: f32 = 1.;
 pub const BACKGROUND_SCALE: f32 = 5.;
 pub const BACKGROUND_LAYER: f32 = 0.;
 pub const CLEARCOLOR: (f32, f32, f32) = (0.1, 0.1, 0.1);
+
+pub const BUTTON_BACKGROUND_COLOR_DEFAULT: Color = Color::srgb(211., 211., 211.);
+pub const BUTTON_BACKGROUND_COLOR_HOVERED: Color = Color::srgb(167., 167., 167.);
+pub const BUTTON_BACKGROUND_COLOR_PRESSED: Color = Color::srgb(54., 54., 54.);
+
+pub const BUTTON_TEXT_COLOR_DEFAULT: Color = Color::srgb(54., 54., 54.);
+pub const BUTTON_TEXT_COLOR_HOVERED: Color = Color::srgb(93., 93., 93.);
+pub const BUTTON_TEXT_COLOR_PRESSED: Color = Color::WHITE;
+
+pub const BUTTON_BORDER_COLOR_DEFAULT: Color = Color::srgb(54., 54., 54.);
+pub const BUTTON_BORDER_COLOR_HOVERED: Color = Color::srgb(93., 93., 93.);
+pub const BUTTON_BORDER_COLOR_PRESSED: Color = Color::WHITE;
 
 // GLOBAL RESOURCES
 

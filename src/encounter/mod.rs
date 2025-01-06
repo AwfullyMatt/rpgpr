@@ -84,20 +84,16 @@ pub fn evr_spawn_encounter(
                 ENCOUNTER_LAYER,
             ),
         };
+        let transform = Transform {
+            translation: Vec3::new(x, 0., z),
+            scale: Vec3::splat(scale),
+            ..default()
+        };
+        let encounter = Encounter { kind: ev.kind };
         let entity = commands
-            .spawn((
-                SpriteBundle {
-                    texture,
-                    transform: Transform {
-                        translation: Vec3::new(x, 0., z),
-                        scale: Vec3::splat(scale),
-                        ..default()
-                    },
-                    ..default()
-                },
-                Encounter { kind: ev.kind },
-            ))
+            .spawn((Sprite::from_image(texture), transform, encounter))
             .id();
+
         match ev.kind {
             EncounterKind::Loot => commands.entity(entity).insert(Loot {
                 kind: LootKind::Money,

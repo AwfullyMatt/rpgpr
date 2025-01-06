@@ -33,6 +33,10 @@ pub struct CharacterAssets {
 
 #[derive(AssetCollection, Resource)]
 pub struct BackgroundAssets {
+    #[asset(key = "background_forest_layout")]
+    pub background_forest_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "background_forest_atlas")]
+    pub background_forest_atlas: Handle<Image>,
     #[asset(key = "background_forest_0")]
     pub background_forest_0: Handle<Image>,
     #[asset(key = "background_forest_1")]

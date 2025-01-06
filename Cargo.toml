@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.14.2", default-features = false, features = [
+bevy = { version = "0.15", default-features = false, features = [
     "animation",
     "bevy_asset",
     "bevy_state",
@@ -31,7 +31,7 @@ bevy = { version = "0.14.2", default-features = false, features = [
     "sysinfo_plugin",
 ] }
 bevy_kira_audio = { version = "0.20" }
-bevy_asset_loader = { version = "0.21", features = ["standard_dynamic_assets"] }
+bevy_asset_loader = { version = "0.22", features = ["2d", "standard_dynamic_assets"] }
 rand = { version = "0.8.3" }
 webbrowser = { version = "1", features = ["hardened"] }
 

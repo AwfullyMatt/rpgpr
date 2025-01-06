@@ -12,7 +12,7 @@ impl Plugin for PlayerPlugin {
             .add_event::<SpawnPlayer>()
             .add_systems(
                 OnEnter(AppState::Playing),
-                (evw_spawn_player, spawn_loot_info),
+                (evw_spawn_player, spawn_money_info),
             )
             .add_systems(
                 Update,
@@ -34,7 +34,7 @@ pub struct PlayerBundle {
 pub struct Player;
 
 #[derive(Component, Clone, Default)]
-pub struct LootCountText;
+pub struct MoneyCountText;
 
 #[derive(Event, Deref)]
 pub struct SpawnPlayer(pub usize);
@@ -48,15 +48,22 @@ pub fn evr_spawn_player(
     for ev in evr_spawn_player.read() {
         commands.spawn((
             PlayerBundle::default(),
-            SpriteBundle {
-                texture: character_assets.character_old_man_0.clone(),
-                transform: Transform {
-                    translation: spawn_locations.characters[**ev],
-                    scale: Vec3::splat(CHARACTER_SCALE),
-                    ..default()
-                },
+            Sprite::from_image(character_assets.character_old_man_0.clone()),
+            Transform {
+                translation: spawn_locations.characters[**ev],
+                scale: Vec3::splat(CHARACTER_SCALE),
                 ..default()
             },
+            // BEVY 15 MIGRATION
+            //SpriteBundle {
+            //texture: character_assets.character_old_man_0.clone(),
+            //transform: Transform {
+            //translation: spawn_locations.characters[**ev],
+            //scale: Vec3::splat(CHARACTER_SCALE),
+            //..default()
+            //},
+            //..default()
+            //},
         ));
         info!("[EVENT] [READ] SpawnPlayer({})", **ev);
     }
@@ -67,36 +74,53 @@ fn evw_spawn_player(mut evw_spawn_player: EventWriter<SpawnPlayer>) {
     info!("[EVENT] [WRITE] SpawnPlayer({})", 0);
 }
 
-pub fn spawn_loot_info(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let font = asset_server.load("fonts/PixelifySans-Regular.ttf");
-    let style = TextStyle {
-        font,
-        font_size: 100.,
-        ..default()
-    };
-    commands.spawn(Text2dBundle {
-        text: Text::from_section("LOOT: ", style.clone()).with_justify(JustifyText::Center),
-        transform: Transform::from_xyz(-800., -400., 5.),
-        ..default()
-    });
-
+pub fn spawn_money_info(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
-        Text2dBundle {
-            text: Text::from_section("", style).with_justify(JustifyText::Right),
-            transform: Transform::from_xyz(-650., -400., 5.),
+        Text::new("Money: "),
+        TextFont {
+            font: asset_server.load("fonts/PixelifySans-Regular.ttf"),
+            font_size: 100.,
             ..default()
         },
-        LootCountText,
+        TextLayout::new_with_justify(JustifyText::Center),
+        Node {
+            position_type: PositionType::Absolute,
+            bottom: Val::Px(10.),
+            left: Val::Px(10.),
+            ..default()
+        },
+        MoneyCountText,
     ));
+    // BEVY 15 MIGRATION
+    //let font = asset_server.load("fonts/PixelifySans-Regular.ttf");
+    // let style = TextStyle {
+    //     font,
+    //     font_size: 100.,
+    //     ..default()
+    // };
+    // commands.spawn(Text2dBundle {
+    //     text: Text::from_section("LOOT: ", style.clone()).with_justify(JustifyText::Center),
+    //     transform: Transform::from_xyz(-800., -400., 5.),
+    //     ..default()
+    // });
+    //
+    // commands.spawn((
+    //     Text2dBundle {
+    //         text: Text::from_section("", style).with_justify(JustifyText::Right),
+    //         transform: Transform::from_xyz(-650., -400., 5.),
+    //         ..default()
+    //     },
+    //     LootCountText,
+    // ));
 }
 
 pub fn update_loot_info(
-    mut query_text: Query<&mut Text, With<LootCountText>>,
+    mut query_text: Query<&mut TextSpan, With<MoneyCountText>>,
     player_loot: Res<PlayerLoot>,
 ) {
     if player_loot.is_changed() {
-        for mut text in query_text.iter_mut() {
-            text.sections[0].value = player_loot.0.to_string();
+        for mut text in &mut query_text {
+            **text = format!("{}", **player_loot);
         }
     }
 }

@@ -1,10 +1,9 @@
-use bevy::prelude::*;
-
 use crate::{
     area::{AreaKind, CurrentArea},
     loading::BackgroundAssets,
-    AppState, SpawnLocations, BACKGROUND_SCALE,
+    AppState, SpawnLocations,
 };
+use bevy::prelude::*;
 
 pub struct BackgroundPlugin;
 
@@ -55,7 +54,12 @@ pub fn evr_spawn_background(
     for ev in evr_spawn_background.read() {
         use AreaKind::*;
 
-        commands.spawn((
+        let texture = match current_area.0.kind {
+            Forest => background_assets.background_forest_atlas.clone(),
+            _ => background_assets.background_forest_atlas.clone(), // TODO: CREATE DEFAULT BG
+        };
+
+        /* commands.spawn((
             SpriteBundle {
                 texture: match current_area.0.kind {
                     Forest => background_assets.background_forest_0.clone(),
@@ -69,7 +73,7 @@ pub fn evr_spawn_background(
                 ..default()
             },
             Background,
-        ));
+        )); */
         info!("[EVENT] [READ] SpawnBackground({})", **ev);
     }
 }
